@@ -21,20 +21,38 @@ public class CameraManager {
     private CameraManager() {
     }
 
+    private void openCamera(){
+        if (mCamera == null){
+            try {
+                mCamera = Camera.open();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void torchOn(CameraActionListener listener){
-        try {
-            mCamera = Camera.open();
-        }catch (Exception e){
+        openCamera();
+        if (mCamera == null){
             if (listener != null){
                 listener.onActionCallback(1, "Camera open failed!");
             }
+            return;
         }
 
+        Camera.Parameters mParameters = mCamera.getParameters();
+        mParameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+        mCamera.setParameters(mParameters);
         mCamera.startPreview();
-        Camera.Parameters parameter = mCamera.getParameters();
-        parameter.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-        mCamera.setParameters(parameter);
 
+        try{
+            mCamera.autoFocus(new Camera.AutoFocusCallback() {
+                public void onAutoFocus(boolean success, Camera camera) {
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void torchOff(CameraActionListener listener){

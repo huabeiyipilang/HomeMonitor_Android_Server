@@ -42,24 +42,12 @@ public class EasemobMessengerAdapter extends AMessengerAdapter {
         EMChat.getInstance().init(App.getContext());
         Log.i(TAG, "EMChat init！");
 
-        EMChatManager.getInstance().login("home_server1", "wowangle", new EMCallBack() {//回调
-            @Override
-            public void onSuccess() {
-                EMGroupManager.getInstance().loadAllGroups();
-                EMChatManager.getInstance().loadAllConversations();
-                Log.i(TAG, "登陆聊天服务器成功！");
-            }
+        Intent intent = new Intent(App.getContext(), LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        App.getContext().startActivity(intent);
+    }
 
-            @Override
-            public void onProgress(int progress, String status) {
-
-            }
-
-            @Override
-            public void onError(int code, String message) {
-                Log.i(TAG, "登陆聊天服务器失败！");
-            }
-        });
+    void onLogin(){
         NewMessageBroadcastReceiver msgReceiver = new NewMessageBroadcastReceiver();
         IntentFilter intentFilter = new IntentFilter(EMChatManager.getInstance().getNewMessageBroadcastAction());
         intentFilter.setPriority(3);

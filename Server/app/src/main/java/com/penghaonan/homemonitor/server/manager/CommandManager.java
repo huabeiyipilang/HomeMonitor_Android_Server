@@ -1,6 +1,11 @@
 package com.penghaonan.homemonitor.server.manager;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 
 import com.penghaonan.homemonitor.server.App;
@@ -48,6 +53,14 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
 //        mMessengerAdapter = new LocalMessengerAdapter();
         mMessengerAdapter = new EasemobMessengerAdapter();
         mMessengerAdapter.setMessageListener(this);
+    }
+
+    public void requestPermissions(Activity activity) {
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA},
+                    0);
+        }
     }
 
     @Override

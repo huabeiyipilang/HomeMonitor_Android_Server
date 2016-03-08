@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements LocalMessengerAda
         setContentView(R.layout.activity_main);
         mCmdInputView = (EditText)findViewById(R.id.cmd_input);
         mOutputView = (TextView)findViewById(R.id.tv_output);
+        CommandManager.getInstance().requestPermissions(this);
     }
 
     @Override
