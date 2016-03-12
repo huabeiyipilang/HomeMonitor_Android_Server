@@ -1,21 +1,47 @@
 package com.penghaonan.homemonitor.server.manager.camera;
 
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.penghaonan.homemonitor.server.App;
 import com.penghaonan.homemonitor.server.R;
-
 
 public class CameraActivity extends AppCompatActivity {
     private SurfaceView mSurfaceView;
     private SurfaceHolder mSurfaceHolder;
 
+    private static CameraActivity sActivity;
+    private static Runnable sRunnable;
+
+    public static void finishActivity() {
+        if (sActivity != null) {
+            sActivity.finish();
+        }
+    }
+
+    public static void startActivity(Runnable runnable){
+        Intent intent = new Intent(App.getContext(), CameraActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        App.getContext().startActivity(intent);
+        sRunnable = runnable;
+    }
+
+    public static CameraActivity getInstance(){
+        return sActivity;
+    }
+
+    public SurfaceView getSurfaceView(){
+        return mSurfaceView;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sActivity = this;
         setContentView(R.layout.activity_camera);
         mSurfaceView = (SurfaceView) findViewById(R.id.surfaceView);
         mSurfaceHolder = mSurfaceView.getHolder();
@@ -39,17 +65,14 @@ public class CameraActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                CameraManager.getInstance().takePic(mSurfaceView, new CameraManager.CameraActionListener() {
-                    @Override
-                    public void onActionCallback(int result, String msg) {
-                        finish();
-                    }
-                });
-            }
-        }, 500);
+        new Handler().postDelayed(sRunnable, 500);
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        sActivity = null;
+        sRunnable = null;
+        CameraManager.getInstance().releaseCamera();
     }
 }

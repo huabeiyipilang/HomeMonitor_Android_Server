@@ -32,7 +32,6 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -40,7 +39,10 @@
         <!-- 声明sdk所需的service SDK核心功能 -->
         <service android:name="com.easemob.chat.EMChatService" />
 
-        <activity android:name=".manager.camera.CameraActivity"></activity>
+        <activity
+            android:name=".manager.camera.CameraActivity"
+            android:launchMode="singleInstance">
+        </activity>
     </application>
 
 </manifest>

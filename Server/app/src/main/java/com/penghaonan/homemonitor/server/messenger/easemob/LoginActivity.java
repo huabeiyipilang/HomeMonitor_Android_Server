@@ -25,9 +25,9 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        mAppKeyView = (EditText)findViewById(R.id.et_appkey);
-        mUserNameView = (EditText)findViewById(R.id.et_username);
-        mPasswordView = (EditText)findViewById(R.id.et_password);
+        mAppKeyView = (EditText) findViewById(R.id.et_appkey);
+        mUserNameView = (EditText) findViewById(R.id.et_username);
+        mPasswordView = (EditText) findViewById(R.id.et_password);
 
         mAppKeyView.setText("carl#homemonitor");
         mUserNameView.setText("home_server1");
@@ -36,38 +36,49 @@ public class LoginActivity extends AppCompatActivity {
         findViewById(R.id.bt_login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String appKey = mAppKeyView.getText().toString();
-                String userName = mUserNameView.getText().toString();
-                String password = mPasswordView.getText().toString();
-
-                EMChat.getInstance().setAppkey(appKey);
-                EMChatManager.getInstance().login(userName, password, new EMCallBack() {//回调
-                    @Override
-                    public void onSuccess() {
-                        EMGroupManager.getInstance().loadAllGroups();
-                        EMChatManager.getInstance().loadAllConversations();
-                        showToast("登陆成功");
-
-                        EasemobMessengerAdapter adapter = (EasemobMessengerAdapter) CommandManager.getInstance().getMessengerAdapter();
-                        adapter.onLogin();
-                        finish();
-                    }
-
-                    @Override
-                    public void onProgress(int progress, String status) {
-
-                    }
-
-                    @Override
-                    public void onError(int code, String message) {
-                        showToast("登陆失败");
-                    }
-                });
+                login();
             }
         });
     }
 
-    private void showToast(final String msg){
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    private void login() {
+        String appKey = mAppKeyView.getText().toString();
+        String userName = mUserNameView.getText().toString();
+        String password = mPasswordView.getText().toString();
+
+        EMChat.getInstance().setAppkey(appKey);
+        EMChatManager.getInstance().login(userName, password, new EMCallBack() {//回调
+            @Override
+            public void onSuccess() {
+                EMGroupManager.getInstance().loadAllGroups();
+                EMChatManager.getInstance().loadAllConversations();
+                showToast("登陆成功");
+
+                EasemobMessengerAdapter adapter = (EasemobMessengerAdapter) CommandManager.getInstance().getMessengerAdapter();
+                adapter.onLogin();
+                finish();
+            }
+
+            @Override
+            public void onProgress(int progress, String status) {
+
+            }
+
+            @Override
+            public void onError(int code, String message) {
+                showToast("登陆失败");
+            }
+        });
+
+    }
+
+    private void showToast(final String msg) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
