@@ -36,10 +36,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".messenger.easemob.LoginActivity" />
-        <!-- 声明sdk所需的service SDK核心功能-->
+        <!-- 声明sdk所需的service SDK核心功能 -->
         <service android:name="com.easemob.chat.EMChatService" />
+
+        <activity android:name=".manager.camera.CameraActivity"></activity>
     </application>
 
 </manifest>

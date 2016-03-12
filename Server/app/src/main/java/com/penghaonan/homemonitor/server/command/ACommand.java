@@ -5,6 +5,7 @@ import com.penghaonan.homemonitor.server.manager.CommandManager;
 import com.penghaonan.homemonitor.server.messenger.AMessage;
 import com.penghaonan.homemonitor.server.messenger.AMessengerAdapter;
 import com.penghaonan.homemonitor.server.messenger.Client;
+import com.penghaonan.homemonitor.server.messenger.ImageMessage;
 
 /**
  * Created by carl on 2/27/16.
@@ -55,8 +56,7 @@ public abstract class ACommand {
      */
     abstract public void execute();
 
-    protected void sendTextToClient(String text){
-        AMessengerAdapter messenger = CommandManager.getInstance().getMessengerAdapter();
-        messenger.sendTextMessage(getClient(), text);
+    protected AMessengerAdapter getMessenger(){
+        return CommandManager.getInstance().getMessengerAdapter();
     }
 }

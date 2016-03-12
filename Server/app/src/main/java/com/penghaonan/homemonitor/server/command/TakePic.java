@@ -1,5 +1,7 @@
 package com.penghaonan.homemonitor.server.command;
 
+import com.penghaonan.homemonitor.server.manager.camera.CameraManager;
+
 /**
  * Created by carl on 3/2/16.
  */
@@ -26,6 +28,11 @@ public class TakePic extends ACommand {
 
     @Override
     public void execute() {
-
+        CameraManager.getInstance().takePic(new CameraManager.CameraActionListener() {
+            @Override
+            public void onActionCallback(int result, String msg) {
+                getMessenger().sendImageMessage(getClient(), msg, null);
+            }
+        });
     }
 }

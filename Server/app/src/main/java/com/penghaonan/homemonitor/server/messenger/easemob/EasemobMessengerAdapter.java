@@ -14,14 +14,17 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
+import com.easemob.chat.ImageMessageBody;
 import com.easemob.chat.TextMessageBody;
 import com.penghaonan.homemonitor.server.App;
 import com.penghaonan.homemonitor.server.manager.CommandManager;
 import com.penghaonan.homemonitor.server.messenger.AMessage;
 import com.penghaonan.homemonitor.server.messenger.AMessengerAdapter;
 import com.penghaonan.homemonitor.server.messenger.Client;
+import com.penghaonan.homemonitor.server.messenger.ImageMessage;
 import com.penghaonan.homemonitor.server.messenger.TextMessage;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 
@@ -47,7 +50,7 @@ public class EasemobMessengerAdapter extends AMessengerAdapter {
         App.getContext().startActivity(intent);
     }
 
-    void onLogin(){
+    void onLogin() {
         NewMessageBroadcastReceiver msgReceiver = new NewMessageBroadcastReceiver();
         IntentFilter intentFilter = new IntentFilter(EMChatManager.getInstance().getNewMessageBroadcastAction());
         intentFilter.setPriority(3);
@@ -56,12 +59,37 @@ public class EasemobMessengerAdapter extends AMessengerAdapter {
 
     @Override
     public void sendMessage(AMessage msg, final MessageSendCallback callback) {
-        if (msg instanceof TextMessage){
-            TextMessage textMessage = (TextMessage)msg;
+        if (msg instanceof TextMessage) {
+            TextMessage textMessage = (TextMessage) msg;
             EMConversation conversation = EMChatManager.getInstance().getConversation(msg.mClient.getUserName());
             EMMessage message = EMMessage.createSendMessage(EMMessage.Type.TXT);
             TextMessageBody txtBody = new TextMessageBody(textMessage.getMessage());
             message.addBody(txtBody);
+            message.setReceipt(msg.mClient.getUserName());
+            conversation.addMessage(message);
+            EMChatManager.getInstance().sendMessage(message, new EMCallBack() {
+                @Override
+                public void onSuccess() {
+
+                }
+
+                @Override
+                public void onError(int i, String s) {
+
+                }
+
+                @Override
+                public void onProgress(int i, String s) {
+
+                }
+            });
+        } else if (msg instanceof ImageMessage) {
+            ImageMessage imageMessage = (ImageMessage) msg;
+            EMConversation conversation = EMChatManager.getInstance().getConversation(msg.mClient.getUserName());
+            EMMessage message = EMMessage.createSendMessage(EMMessage.Type.IMAGE);
+            File file = new File(imageMessage.getImagePath());
+            ImageMessageBody imgBody = new ImageMessageBody(file);
+            message.addBody(imgBody);
             message.setReceipt(msg.mClient.getUserName());
             conversation.addMessage(message);
             EMChatManager.getInstance().sendMessage(message, new EMCallBack() {
@@ -116,7 +144,7 @@ public class EasemobMessengerAdapter extends AMessengerAdapter {
             // 收到这个广播的时候，message已经在db和内存里了，可以通过id获取mesage对象
             EMMessage message = EMChatManager.getInstance().getMessage(msgId);
             EMMessage.Type type = message.getType();
-            switch (type){
+            switch (type) {
                 case TXT:
                     TextMessageBody body = (TextMessageBody) message.getBody();
                     String cmd = body.getMessage();

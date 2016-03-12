@@ -1,9 +1,8 @@
 package com.penghaonan.homemonitor.server.command;
 
-import android.hardware.Camera;
 import android.text.TextUtils;
 
-import com.penghaonan.homemonitor.server.manager.CameraManager;
+import com.penghaonan.homemonitor.server.manager.camera.CameraManager;
 import com.penghaonan.homemonitor.server.messenger.TextMessage;
 
 /**
@@ -59,7 +58,7 @@ public class Torch extends ACommand {
                 @Override
                 public void onActionCallback(int result, String msg) {
                     if (result != 0){
-                        sendTextToClient(msg);
+                        getMessenger().sendTextMessage(getClient(), msg, null);
                     }
                 }
             });
@@ -68,13 +67,13 @@ public class Torch extends ACommand {
                 @Override
                 public void onActionCallback(int result, String msg) {
                     if (result != 0) {
-                        sendTextToClient(msg);
+                        getMessenger().sendTextMessage(getClient(), msg, null);
                     }
                 }
             });
         } else if ((ARG_INFO.equals(mAction))) {
             boolean isTorchOn = CameraManager.getInstance().isTorchOn();
-            sendTextToClient("Torch is " + (isTorchOn ? "ON" : "OFF"));
+            getMessenger().sendTextMessage(getClient(), "Torch is " + (isTorchOn ? "ON" : "OFF"), null);
         }
     }
 }

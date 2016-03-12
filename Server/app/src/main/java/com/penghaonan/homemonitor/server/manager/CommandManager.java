@@ -10,6 +10,7 @@ import android.text.TextUtils;
 
 import com.penghaonan.homemonitor.server.App;
 import com.penghaonan.homemonitor.server.command.ACommand;
+import com.penghaonan.homemonitor.server.command.TakePic;
 import com.penghaonan.homemonitor.server.command.Torch;
 import com.penghaonan.homemonitor.server.messenger.AMessage;
 import com.penghaonan.homemonitor.server.messenger.AMessengerAdapter;
@@ -32,6 +33,7 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
     static {
         sCommandCls = new LinkedList<>();
         sCommandCls.add(Torch.class);
+        sCommandCls.add(TakePic.class);
     }
 
     private static CommandManager ourInstance = new CommandManager();
@@ -68,7 +70,7 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
         if (message instanceof TextMessage) {
             handleTextMessage((TextMessage) message);
         } else {
-            mMessengerAdapter.sendTextMessage(message.mClient, "Unknown message type!");
+            mMessengerAdapter.sendTextMessage(message.mClient, "Unknown message type!", null);
         }
     }
 
@@ -79,13 +81,13 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
     private void handleTextMessage(TextMessage msg) {
         String cmd = msg.getCommand();
         if (TextUtils.isEmpty(cmd)) {
-            mMessengerAdapter.sendTextMessage(msg.mClient, "Error command!");
+            mMessengerAdapter.sendTextMessage(msg.mClient, "Error command!", null);
             return;
         }
 
         ACommand command = createCommand(cmd);
         if (command == null){
-            mMessengerAdapter.sendTextMessage(msg.mClient, "No such command!");
+            mMessengerAdapter.sendTextMessage(msg.mClient, "No such command!", null);
             return;
         }
         command.setCommandStr(msg.getMessage());
@@ -129,9 +131,9 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
      */
     private void executeCommand(ACommand command) {
         if (!command.isSupport()) {
-            mMessengerAdapter.sendTextMessage(command.getClient(), "This command is not support!");
+            mMessengerAdapter.sendTextMessage(command.getClient(), "This command is not support!", null);
         } else if (!command.isCommandValid()) {
-            mMessengerAdapter.sendTextMessage(command.getClient(), "Command invalid!");
+            mMessengerAdapter.sendTextMessage(command.getClient(), "Command invalid!", null);
         } else {
             command.execute();
         }

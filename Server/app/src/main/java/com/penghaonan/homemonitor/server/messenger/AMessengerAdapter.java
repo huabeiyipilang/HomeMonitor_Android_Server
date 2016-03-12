@@ -2,6 +2,8 @@ package com.penghaonan.homemonitor.server.messenger;
 
 import android.text.TextUtils;
 
+import com.penghaonan.homemonitor.server.manager.CommandManager;
+
 /**
  * Created by carl on 2/27/16.
  */
@@ -25,13 +27,21 @@ public abstract class AMessengerAdapter {
 
     abstract public void sendMessage(AMessage msg, MessageSendCallback callback);
 
-    public void sendTextMessage(Client client, String msg){
+    public void sendTextMessage(Client client, String msg, MessageSendCallback callback){
         if (client == null || TextUtils.isEmpty(msg)){
             return;
         }
-        TextMessage errorMessage = new TextMessage(msg);
-        errorMessage.mClient = client;
-        sendMessage(errorMessage, null);
+        TextMessage message = new TextMessage(msg);
+        message.mClient = client;
+        sendMessage(message, callback);
+    }
+
+    public void sendImageMessage(Client client, String path, MessageSendCallback callback){
+        AMessengerAdapter messenger = CommandManager.getInstance().getMessengerAdapter();
+        ImageMessage imgMessage = new ImageMessage();
+        imgMessage.mClient = client;
+        imgMessage.setImagePath(path);
+        messenger.sendMessage(imgMessage, callback);
     }
 
     public void setMessageListener(MessageListener listener){
