@@ -10,17 +10,11 @@ import com.penghaonan.homemonitor.server.messenger.TextMessage;
  */
 public class Torch extends ACommand {
 
-    private final static String CMD = "torch";
     private final static String ARG_ON = "on";
     private final static String ARG_OFF = "off";
     private final static String ARG_INFO = "info";
 
     private String mAction;
-
-    public static boolean match(String cmdStr) {
-        boolean res = CMD.equals(cmdStr);
-        return res;
-    }
 
     @Override
     public boolean isCommandValid() {

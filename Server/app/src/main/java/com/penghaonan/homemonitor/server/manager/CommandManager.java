@@ -28,13 +28,6 @@ import java.util.List;
  * Created by carl on 2/27/16.
  */
 public class CommandManager implements AMessengerAdapter.MessageListener {
-    private static List<Class<? extends ACommand>> sCommandCls;
-
-    static {
-        sCommandCls = new LinkedList<>();
-        sCommandCls.add(Torch.class);
-        sCommandCls.add(TakePic.class);
-    }
 
     private static CommandManager ourInstance = new CommandManager();
     private static Context sContext;
@@ -74,7 +67,7 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
         }
     }
 
-    public AMessengerAdapter getMessengerAdapter(){
+    public AMessengerAdapter getMessengerAdapter() {
         return mMessengerAdapter;
     }
 
@@ -86,7 +79,7 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
         }
 
         ACommand command = createCommand(cmd);
-        if (command == null){
+        if (command == null) {
             mMessengerAdapter.sendTextMessage(msg.mClient, "No such command!", null);
             return;
         }
@@ -98,28 +91,21 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
 
     /**
      * 根据cmd创建ACommand实例
+     *
      * @param cmd
      * @return
      */
-    private ACommand createCommand(String cmd){
+    private ACommand createCommand(String cmd) {
         ACommand command = null;
-        for (Class<? extends ACommand> cls : sCommandCls) {
-            Method matchMethod;
-            try {
-                matchMethod = cls.getMethod("match", String.class);
-                boolean match = (boolean) matchMethod.invoke(cls, cmd);
-                if (match){
+        for (Class<? extends ACommand> cls : CommandProfile.getCommandClassList()) {
+            if (cls.getSimpleName().toLowerCase().equals(cmd)) {
+                try {
                     command = cls.newInstance();
-                    break;
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
                 }
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
             }
         }
         return command;
@@ -127,6 +113,7 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
 
     /**
      * 执行命令
+     *
      * @param command
      */
     private void executeCommand(ACommand command) {
