@@ -8,6 +8,7 @@ import com.penghaonan.homemonitor.server.messenger.Client;
 import com.penghaonan.homemonitor.server.messenger.ImageMessage;
 
 /**
+ * 所有命令的父类
  * Created by carl on 2/27/16.
  */
 public abstract class ACommand {

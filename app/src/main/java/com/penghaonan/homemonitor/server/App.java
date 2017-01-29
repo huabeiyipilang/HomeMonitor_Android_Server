@@ -2,6 +2,8 @@ package com.penghaonan.homemonitor.server;
 
 import android.app.Application;
 import android.content.Context;
+
+import com.penghaonan.appframework.AppDelegate;
 import com.penghaonan.homemonitor.server.manager.CommandManager;
 
 /**
@@ -14,7 +16,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         sInstance = this;
-
+        AppDelegate.init(this);
         CommandManager.getInstance().getMessengerAdapter().onAppStart();
     }
 

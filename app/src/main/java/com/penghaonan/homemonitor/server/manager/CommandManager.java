@@ -10,18 +10,12 @@ import android.text.TextUtils;
 
 import com.penghaonan.homemonitor.server.App;
 import com.penghaonan.homemonitor.server.command.ACommand;
-import com.penghaonan.homemonitor.server.command.TakePic;
-import com.penghaonan.homemonitor.server.command.Torch;
 import com.penghaonan.homemonitor.server.messenger.AMessage;
 import com.penghaonan.homemonitor.server.messenger.AMessengerAdapter;
 import com.penghaonan.homemonitor.server.messenger.TextMessage;
 import com.penghaonan.homemonitor.server.messenger.easemob.EasemobMessengerAdapter;
-import com.penghaonan.homemonitor.server.messenger.local.LocalMessengerAdapter;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.LinkedList;
-import java.util.List;
 
 
 /**

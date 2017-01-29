@@ -3,6 +3,7 @@ package com.penghaonan.homemonitor.server.command;
 import com.penghaonan.homemonitor.server.manager.camera.CameraManager;
 
 /**
+ * 拍照命令
  * Created by carl on 3/2/16.
  */
 public class TakePic extends ACommand {

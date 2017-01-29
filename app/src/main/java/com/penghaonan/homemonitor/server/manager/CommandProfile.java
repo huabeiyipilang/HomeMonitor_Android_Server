@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * 服务端配置文件
  * Created by carl on 3/16/16.
  */
 public class CommandProfile {

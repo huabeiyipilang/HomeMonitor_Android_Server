@@ -6,6 +6,7 @@ import com.penghaonan.homemonitor.server.manager.camera.CameraManager;
 import com.penghaonan.homemonitor.server.messenger.TextMessage;
 
 /**
+ * 手电筒命令
  * Created by carl on 2/27/16.
  */
 public class Torch extends ACommand {
