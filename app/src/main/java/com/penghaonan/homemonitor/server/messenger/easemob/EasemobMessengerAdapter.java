@@ -78,4 +78,9 @@ public class EasemobMessengerAdapter extends AMessengerAdapter {
         EMMessage message = MessageConvert.convert(msg);
         EMClient.getInstance().chatManager().sendMessage(message);
     }
+
+    @Override
+    public String getServerId() {
+        return EMClient.getInstance().getCurrentUser();
+    }
 }

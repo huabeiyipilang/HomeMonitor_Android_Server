@@ -26,8 +26,15 @@
             android:text="Send" />
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/qrcode_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"/>
+
     <TextView
         android:id="@+id/tv_output"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
 </LinearLayout>
