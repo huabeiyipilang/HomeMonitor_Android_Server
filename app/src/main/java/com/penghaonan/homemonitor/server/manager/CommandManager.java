@@ -1,14 +1,8 @@
 package com.penghaonan.homemonitor.server.manager;
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 
-import com.penghaonan.homemonitor.server.App;
+import com.penghaonan.appframework.utils.Logger;
 import com.penghaonan.homemonitor.server.command.ACommand;
 import com.penghaonan.homemonitor.server.messenger.AMessage;
 import com.penghaonan.homemonitor.server.messenger.AMessengerAdapter;
@@ -16,25 +10,23 @@ import com.penghaonan.homemonitor.server.messenger.TextMessage;
 import com.penghaonan.homemonitor.server.messenger.easemob.EasemobMessengerAdapter;
 
 import java.util.LinkedList;
+import java.util.Queue;
 
 
 /**
+ * Command处理，管理
  * Created by carl on 2/27/16.
  */
 public class CommandManager implements AMessengerAdapter.MessageListener {
 
     private static CommandManager ourInstance = new CommandManager();
-    private static Context sContext;
 
-    private LinkedList<ACommand> mCacheCommands = new LinkedList<>();
-    private LinkedList<ACommand> mRunningCommands = new LinkedList<>();
+    private Queue<ACommand> mCacheCommands = new LinkedList<>();
+    private ACommand mRunningCommand;
 
     private AMessengerAdapter mMessengerAdapter;
 
     public static CommandManager getInstance() {
-        if (sContext == null) {
-            sContext = App.getContext();
-        }
         return ourInstance;
     }
 
@@ -42,14 +34,6 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
 //        mMessengerAdapter = new LocalMessengerAdapter();
         mMessengerAdapter = new EasemobMessengerAdapter();
         mMessengerAdapter.setMessageListener(this);
-    }
-
-    public void requestPermissions(Activity activity) {
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA},
-                    0);
-        }
     }
 
     @Override
@@ -79,15 +63,20 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
         }
         command.setCommandStr(msg.getMessage());
         command.setMessage(msg);
+        if (!command.isSupport()) {
+            mMessengerAdapter.sendTextMessage(command.getClient(), "This command is not support!", null);
+            return;
+        }
+        if (!command.isCommandValid()) {
+            mMessengerAdapter.sendTextMessage(command.getClient(), "Command invalid!", null);
+            return;
+        }
 
-        executeCommand(command);
+        postCommand(command);
     }
 
     /**
      * 根据cmd创建ACommand实例
-     *
-     * @param cmd
-     * @return
      */
     private ACommand createCommand(String cmd) {
         ACommand command = null;
@@ -95,29 +84,41 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
             if (cls.getSimpleName().toLowerCase().equals(cmd)) {
                 try {
                     command = cls.newInstance();
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    Logger.e(e);
                 }
             }
         }
         return command;
     }
 
-    /**
-     * 执行命令
-     *
-     * @param command
-     */
-    private void executeCommand(ACommand command) {
-        if (!command.isSupport()) {
-            mMessengerAdapter.sendTextMessage(command.getClient(), "This command is not support!", null);
-        } else if (!command.isCommandValid()) {
-            mMessengerAdapter.sendTextMessage(command.getClient(), "Command invalid!", null);
+    private void postCommand(ACommand command) {
+        mCacheCommands.add(command);
+        checkCommand();
+    }
+
+    private void checkCommand() {
+        if (mRunningCommand == null) {
+            mRunningCommand = mCacheCommands.poll();
+            if (mRunningCommand != null) {
+                mRunningCommand.setCommandListener(mCommandListener);
+                mRunningCommand.execute();
+            }
         } else {
-            command.execute();
+            Logger.i("checkCommand", "Has running command:" + mRunningCommand.toString());
         }
     }
+
+    private ACommand.CommandListener mCommandListener = new ACommand.CommandListener() {
+
+        @Override
+        public void onFinished() {
+            if (mRunningCommand != null) {
+                mRunningCommand.setCommandListener(null);
+                mRunningCommand = null;
+            }
+            checkCommand();
+        }
+    };
 
 }

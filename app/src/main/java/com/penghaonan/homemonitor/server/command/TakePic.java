@@ -27,6 +27,7 @@ public class TakePic extends ACommand {
             @Override
             public void onActionCallback(int result, String msg) {
                 getMessenger().sendImageMessage(getClient(), msg, null);
+                notifyFinished();
             }
         });
     }

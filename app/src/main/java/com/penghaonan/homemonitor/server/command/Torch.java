@@ -52,9 +52,10 @@ public class Torch extends ACommand {
             CameraManager.getInstance().torchOn(new CameraManager.CameraActionListener() {
                 @Override
                 public void onActionCallback(int result, String msg) {
-                    if (result != 0){
+                    if (result != 0) {
                         getMessenger().sendTextMessage(getClient(), msg, null);
                     }
+                    notifyFinished();
                 }
             });
         } else if (ARG_OFF.equals(mAction)) {
@@ -64,11 +65,13 @@ public class Torch extends ACommand {
                     if (result != 0) {
                         getMessenger().sendTextMessage(getClient(), msg, null);
                     }
+                    notifyFinished();
                 }
             });
         } else if ((ARG_INFO.equals(mAction))) {
             boolean isTorchOn = CameraManager.getInstance().isTorchOn();
             getMessenger().sendTextMessage(getClient(), "Torch is " + (isTorchOn ? "ON" : "OFF"), null);
+            notifyFinished();
         }
     }
 }

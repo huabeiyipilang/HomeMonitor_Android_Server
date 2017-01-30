@@ -6,10 +6,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.easemob.EMCallBack;
-import com.easemob.chat.EMChat;
-import com.easemob.chat.EMChatManager;
-import com.easemob.chat.EMGroupManager;
+import com.hyphenate.EMCallBack;
+import com.hyphenate.EMConnectionListener;
+import com.hyphenate.chat.EMClient;
 import com.penghaonan.homemonitor.server.App;
 import com.penghaonan.homemonitor.server.R;
 import com.penghaonan.homemonitor.server.manager.CommandManager;
@@ -52,12 +51,22 @@ public class LoginActivity extends AppCompatActivity {
         String userName = mUserNameView.getText().toString();
         String password = mPasswordView.getText().toString();
 
-        EMChat.getInstance().setAppkey(appKey);
-        EMChatManager.getInstance().login(userName, password, new EMCallBack() {//回调
+        EMClient.getInstance().addConnectionListener(new EMConnectionListener() {
+            @Override
+            public void onConnected() {
+
+            }
+
+            @Override
+            public void onDisconnected(int errorCode) {
+
+            }
+        });
+        EMClient.getInstance().login(userName, password, new EMCallBack() {//回调
             @Override
             public void onSuccess() {
-                EMGroupManager.getInstance().loadAllGroups();
-                EMChatManager.getInstance().loadAllConversations();
+                EMClient.getInstance().groupManager().loadAllGroups();
+                EMClient.getInstance().chatManager().loadAllConversations();
                 showToast("登陆成功");
 
                 EasemobMessengerAdapter adapter = (EasemobMessengerAdapter) CommandManager.getInstance().getMessengerAdapter();

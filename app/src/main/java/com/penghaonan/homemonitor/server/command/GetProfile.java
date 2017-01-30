@@ -21,5 +21,6 @@ public class GetProfile extends ACommand{
     @Override
     public void execute() {
         getMessenger().sendTextMessage(getClient(), CommandProfile.getProfile(), null);
+        notifyFinished();
     }
 }
