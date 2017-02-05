@@ -3,6 +3,7 @@ package com.penghaonan.homemonitor.server.manager;
 import android.text.TextUtils;
 
 import com.penghaonan.appframework.utils.Logger;
+import com.penghaonan.homemonitor.server.BuildConfig;
 import com.penghaonan.homemonitor.server.command.ACommand;
 import com.penghaonan.homemonitor.server.messenger.AMessage;
 import com.penghaonan.homemonitor.server.messenger.AMessengerAdapter;
@@ -94,6 +95,12 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
 
     private void postCommand(ACommand command) {
         mCacheCommands.add(command);
+        if (mRunningCommand != null) {
+            mMessengerAdapter.sendTextMessage(command.getClient(), "There has running command. Add this command in queue.", null);
+            if (BuildConfig.DEBUG) {
+                mMessengerAdapter.sendTextMessage(command.getClient(), "Running command:" + mRunningCommand.getCommandStr(), null);
+            }
+        }
         checkCommand();
     }
 

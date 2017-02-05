@@ -2,7 +2,11 @@ package com.penghaonan.homemonitor.server.messenger;
 
 import android.text.TextUtils;
 
+import com.penghaonan.appframework.AppDelegate;
 import com.penghaonan.homemonitor.server.manager.CommandManager;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by carl on 2/27/16.
@@ -10,6 +14,10 @@ import com.penghaonan.homemonitor.server.manager.CommandManager;
 public abstract class AMessengerAdapter {
     public interface MessageListener {
         void onMessageReceive(AMessage message);
+    }
+
+    public interface MessengerStateListener {
+        void onMessengerEnable(boolean enable);
     }
 
     public interface MessageSendCallback {
@@ -22,6 +30,7 @@ public abstract class AMessengerAdapter {
     }
 
     private MessageListener mMessageListener;
+    private final List<MessengerStateListener> mMessengerStateListeners = new LinkedList<>();
 
     abstract public void onAppStart();
 
@@ -50,5 +59,34 @@ public abstract class AMessengerAdapter {
 
     public void setMessageListener(MessageListener listener) {
         mMessageListener = listener;
+    }
+
+    public void addMessengerStateListener(MessengerStateListener listener) {
+        synchronized (mMessengerStateListeners) {
+            if (!mMessengerStateListeners.contains(listener)) {
+                mMessengerStateListeners.add(listener);
+            }
+        }
+    }
+
+    public void removeMessengerStateListener(MessengerStateListener listener) {
+        synchronized (mMessengerStateListeners) {
+            if (mMessengerStateListeners.contains(listener)) {
+                mMessengerStateListeners.remove(listener);
+            }
+        }
+    }
+
+    protected void notifyMessengerStateChanged(final boolean enable) {
+        synchronized (mMessengerStateListeners) {
+            for (final MessengerStateListener listener : mMessengerStateListeners) {
+                AppDelegate.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.onMessengerEnable(enable);
+                    }
+                });
+            }
+        }
     }
 }

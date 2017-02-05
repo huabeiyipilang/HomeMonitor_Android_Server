@@ -6,7 +6,7 @@ import com.penghaonan.homemonitor.server.manager.CommandProfile;
  * 获取本服务端可支持的命令
  * Created by carl on 3/20/16.
  */
-public class GetProfile extends ACommand{
+public class GetProfile extends ACommand {
 
     @Override
     public boolean isCommandValid() {
@@ -20,7 +20,8 @@ public class GetProfile extends ACommand{
 
     @Override
     public void execute() {
-        getMessenger().sendTextMessage(getClient(), CommandProfile.getProfile(), null);
+        String response = GetProfile.class.getSimpleName().toLowerCase() + ":" + CommandProfile.getProfile();
+        getMessenger().sendTextMessage(getClient(), response, null);
         notifyFinished();
     }
 }

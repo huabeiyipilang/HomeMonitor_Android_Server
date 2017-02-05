@@ -5,19 +5,25 @@ android {
     compileSdkVersion 23
     buildToolsVersion '25.0.0'
     useLibrary 'org.apache.http.legacy'
-
     defaultConfig {
         applicationId "com.penghaonan.homemonitor.server"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
     buildTypes {
-        release {
+        debug {
             minifyEnabled false
+            manifestPlaceholders = [EASEMOB_APPKEY: "carl#homemonitor"]
+        }
+        release {
+            minifyEnabled true
+            manifestPlaceholders = [EASEMOB_APPKEY: "carl#homemonitoronline"]
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    productFlavors {
     }
 }
 

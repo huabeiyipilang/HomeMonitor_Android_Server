@@ -3,6 +3,7 @@ package com.penghaonan.homemonitor.server.messenger.easemob;
 import android.content.Intent;
 import android.util.Log;
 
+import com.hyphenate.EMConnectionListener;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
@@ -69,6 +70,17 @@ public class EasemobMessengerAdapter extends AMessengerAdapter {
             @Override
             public void onMessageChanged(EMMessage message, Object change) {
 
+            }
+        });
+        EMClient.getInstance().addConnectionListener(new EMConnectionListener() {
+            @Override
+            public void onConnected() {
+                notifyMessengerStateChanged(true);
+            }
+
+            @Override
+            public void onDisconnected(int errorCode) {
+                notifyMessengerStateChanged(false);
             }
         });
     }

@@ -4,19 +4,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.support.annotation.NonNull;
 import android.view.SurfaceView;
+
+import com.penghaonan.appframework.utils.Logger;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 /**
  * Created by carl on 2/28/16.
@@ -105,36 +101,52 @@ public class CameraManager {
     public void torchOn(final CameraActionListener listener) {
         if (isInUse()) {
             listener.onActionCallback(1, "Camera is using by other command!");
-        }else {
+        } else {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    SurfaceView surfaceView = CameraActivity.getInstance().getSurfaceView();
-                    if (surfaceView == null) {
-                        return;
-                    }
-                    openCamera();
+                    try {
+                        SurfaceView surfaceView = CameraActivity.getInstance().getSurfaceView();
+                        if (surfaceView == null) {
+                            return;
+                        }
+                        openCamera();
 
-                    if (mCamera == null) {
+                        if (mCamera == null) {
+                            if (listener != null) {
+                                listener.onActionCallback(1, "Camera open failed!");
+                            }
+                            return;
+                        }
+
+                        Camera.Parameters parameters = mCamera.getParameters();
+                        List<Camera.Size> pictureSizes = parameters.getSupportedPictureSizes();
+                        Camera.Size size = pictureSizes.get(11);
+                        parameters.setPreviewSize(size.width, size.height);
+                        parameters.setPictureSize(size.width, size.height);
+                        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                        mCamera.setParameters(parameters);
+                        try {
+                            mCamera.setPreviewDisplay(surfaceView.getHolder());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        mCamera.startPreview();
+                        if (listener != null) {
+                            listener.onActionCallback(0, "Camera open success!");
+                        }
+                    } catch (Exception e) {
+                        Logger.e(e);
+                        if (mCamera != null) {
+                            try {
+                                mCamera.release();
+                            } catch (Exception ignored) {
+                            }
+                        }
                         if (listener != null) {
                             listener.onActionCallback(1, "Camera open failed!");
                         }
-                        return;
                     }
-
-                    Camera.Parameters parameters = mCamera.getParameters();
-                    List<Camera.Size> pictureSizes = parameters.getSupportedPictureSizes();
-                    Camera.Size size = pictureSizes.get(11);
-                    parameters.setPreviewSize(size.width, size.height);
-                    parameters.setPictureSize(size.width, size.height);
-                    parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-                    mCamera.setParameters(parameters);
-                    try {
-                        mCamera.setPreviewDisplay(surfaceView.getHolder());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    mCamera.startPreview();
                 }
             };
             CameraActivity.startActivity(runnable);
@@ -147,6 +159,10 @@ public class CameraManager {
         if (!isTorchOn()) {
             if (listener != null) {
                 listener.onActionCallback(1, "Torch not on!");
+            }
+        }else {
+            if (listener != null) {
+                listener.onActionCallback(0, "Torch off!");
             }
         }
         CameraActivity.finishActivity();

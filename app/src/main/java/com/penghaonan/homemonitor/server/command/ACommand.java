@@ -24,6 +24,10 @@ public abstract class ACommand {
         mCommandStr = cmd;
     }
 
+    public String getCommandStr() {
+        return mCommandStr;
+    }
+
     public void setMessage(AMessage message) {
         mMessage = message;
     }

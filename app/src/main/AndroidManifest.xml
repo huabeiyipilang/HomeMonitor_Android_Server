@@ -32,6 +32,7 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -40,8 +41,8 @@
         <!-- 设置环信应用的AppKey -->
         <meta-data
             android:name="EASEMOB_APPKEY"
-            android:value="carl#homemonitor" />
-        <!-- 声明SDK所需的service SDK核心功能-->
+            android:value="${EASEMOB_APPKEY}" />
+        <!-- 声明SDK所需的service SDK核心功能 -->
         <service
             android:name="com.hyphenate.chat.EMChatService"
             android:exported="true" />
@@ -53,6 +54,7 @@
         <receiver android:name="com.hyphenate.chat.EMMonitorReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
+
                 <data android:scheme="package" />
             </intent-filter>
             <!-- 可选filter -->
@@ -64,7 +66,12 @@
 
         <activity
             android:name=".manager.camera.CameraActivity"
-            android:launchMode="singleInstance"></activity>
+            android:launchMode="singleInstance" />
+
+        <service
+            android:name=".MainService"
+            android:enabled="true"
+            android:exported="false"></service>
     </application>
 
 </manifest>
