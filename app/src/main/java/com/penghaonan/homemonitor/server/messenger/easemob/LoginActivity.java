@@ -26,7 +26,6 @@ import butterknife.OnClick;
 public class LoginActivity extends BaseActivity {
 
     private final static String PREF_KEY = "easemob_id";
-    private boolean isFailed;
 
     @OnClick(R.id.tv_tips)
     void onRetryClick() {

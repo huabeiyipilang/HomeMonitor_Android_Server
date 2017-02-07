@@ -57,6 +57,8 @@ public abstract class AMessengerAdapter {
         messenger.sendMessage(imgMessage, callback);
     }
 
+    public void sendVideoCall(Client client, MessageSendCallback callback) {}
+
     public void setMessageListener(MessageListener listener) {
         mMessageListener = listener;
     }

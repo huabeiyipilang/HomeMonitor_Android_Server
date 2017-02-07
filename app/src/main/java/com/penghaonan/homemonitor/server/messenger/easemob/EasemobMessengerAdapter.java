@@ -8,13 +8,16 @@ import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMOptions;
+import com.hyphenate.exceptions.EMServiceNotReadyException;
 import com.penghaonan.appframework.AppDelegate;
 import com.penghaonan.appframework.utils.CommonUtils;
+import com.penghaonan.appframework.utils.Logger;
 import com.penghaonan.homemonitor.server.App;
 import com.penghaonan.homemonitor.server.BuildConfig;
 import com.penghaonan.homemonitor.server.manager.CommandManager;
 import com.penghaonan.homemonitor.server.messenger.AMessage;
 import com.penghaonan.homemonitor.server.messenger.AMessengerAdapter;
+import com.penghaonan.homemonitor.server.messenger.Client;
 
 import java.util.List;
 
@@ -89,6 +92,17 @@ public class EasemobMessengerAdapter extends AMessengerAdapter {
     public void sendMessage(AMessage msg, final MessageSendCallback callback) {
         EMMessage message = MessageConvert.convert(msg);
         EMClient.getInstance().chatManager().sendMessage(message);
+    }
+
+    @Override
+    public void sendVideoCall(Client client, MessageSendCallback callback) {
+        super.sendVideoCall(client, callback);
+        try {
+            EMClient.getInstance().callManager().makeVideoCall(client.getUserName());
+        } catch (EMServiceNotReadyException e) {
+            Logger.e(e);
+            sendTextMessage(client, "Video call failed", null);
+        }
     }
 
     @Override

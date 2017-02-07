@@ -5,6 +5,7 @@ import com.penghaonan.homemonitor.server.command.ACommand;
 import com.penghaonan.homemonitor.server.command.GetProfile;
 import com.penghaonan.homemonitor.server.command.TakePic;
 import com.penghaonan.homemonitor.server.command.Torch;
+import com.penghaonan.homemonitor.server.command.videocall.VideoCall;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -22,6 +23,7 @@ public class CommandProfile {
         sCommandCls.add(GetProfile.class);
         sCommandCls.add(Torch.class);
         sCommandCls.add(TakePic.class);
+        sCommandCls.add(VideoCall.class);
     }
     public static List<Class<? extends ACommand>> getCommandClassList(){
         return sCommandCls;
@@ -34,7 +36,7 @@ public class CommandProfile {
     public static String getProfile(){
         List<CommandData> profile = new ArrayList<>();
         CommandData cmdData = new CommandData();
-        cmdData.command = "takepic";
+        cmdData.command = TakePic.class.getSimpleName().toLowerCase();
         cmdData.description = "拍照";
         profile.add(cmdData);
 
@@ -46,6 +48,11 @@ public class CommandProfile {
         cmdData = new CommandData();
         cmdData.command = "torch off";
         cmdData.description = "关灯";
+        profile.add(cmdData);
+
+        cmdData = new CommandData();
+        cmdData.command = VideoCall.class.getSimpleName().toLowerCase();
+        cmdData.description = "视频";
         profile.add(cmdData);
 
         return JSON.toJSONString(profile);
