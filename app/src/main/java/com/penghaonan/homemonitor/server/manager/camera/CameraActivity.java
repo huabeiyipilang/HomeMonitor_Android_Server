@@ -1,16 +1,16 @@
 package com.penghaonan.homemonitor.server.manager.camera;
 
 import android.content.Intent;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.penghaonan.homemonitor.server.App;
 import com.penghaonan.homemonitor.server.R;
+import com.penghaonan.homemonitor.server.base.BaseActivity;
 
-public class CameraActivity extends AppCompatActivity {
+public class CameraActivity extends BaseActivity {
     private SurfaceView mSurfaceView;
     private SurfaceHolder mSurfaceHolder;
 

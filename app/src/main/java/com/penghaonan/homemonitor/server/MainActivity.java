@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -18,6 +17,7 @@ import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.penghaonan.appframework.AppDelegate;
 import com.penghaonan.appframework.utils.CommonUtils;
+import com.penghaonan.homemonitor.server.base.BaseActivity;
 import com.penghaonan.homemonitor.server.manager.CommandManager;
 import com.penghaonan.homemonitor.server.messenger.AMessengerAdapter;
 import com.penghaonan.homemonitor.server.messenger.local.LocalMessengerAdapter;
@@ -29,7 +29,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class MainActivity extends AppCompatActivity implements LocalMessengerAdapter.LocalMessageListener, AMessengerAdapter.MessengerStateListener {
+public class MainActivity extends BaseActivity implements LocalMessengerAdapter.LocalMessageListener, AMessengerAdapter.MessengerStateListener {
 
     @BindView(R.id.cmd_input)
     EditText mCmdInputView;
