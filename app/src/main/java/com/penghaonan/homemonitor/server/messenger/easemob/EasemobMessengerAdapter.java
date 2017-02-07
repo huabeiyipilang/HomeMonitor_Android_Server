@@ -1,6 +1,7 @@
 package com.penghaonan.homemonitor.server.messenger.easemob;
 
 import android.content.Intent;
+import android.hardware.Camera;
 import android.util.Log;
 
 import com.hyphenate.EMConnectionListener;
@@ -9,6 +10,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMOptions;
 import com.hyphenate.exceptions.EMServiceNotReadyException;
+import com.hyphenate.exceptions.HyphenateException;
 import com.penghaonan.appframework.AppDelegate;
 import com.penghaonan.appframework.utils.CommonUtils;
 import com.penghaonan.appframework.utils.Logger;
@@ -98,6 +100,11 @@ public class EasemobMessengerAdapter extends AMessengerAdapter {
     public void sendVideoCall(Client client, MessageSendCallback callback) {
         super.sendVideoCall(client, callback);
         try {
+            try {
+                EMClient.getInstance().callManager().setCameraFacing(Camera.CameraInfo.CAMERA_FACING_BACK);
+            } catch (HyphenateException e) {
+                Logger.e(e);
+            }
             EMClient.getInstance().callManager().makeVideoCall(client.getUserName());
         } catch (EMServiceNotReadyException e) {
             Logger.e(e);
