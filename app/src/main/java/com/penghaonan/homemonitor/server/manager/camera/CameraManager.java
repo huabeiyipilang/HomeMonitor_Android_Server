@@ -6,6 +6,7 @@ import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.view.SurfaceView;
 
+import com.penghaonan.appframework.utils.BitmapUtils;
 import com.penghaonan.appframework.utils.Logger;
 
 import java.io.BufferedOutputStream;
@@ -57,7 +58,8 @@ public class CameraManager {
                     Camera.Size size = pictureSizes.get(11);
                     parameters.setPreviewSize(size.width, size.height);
                     parameters.setPictureSize(size.width, size.height);
-                    parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+//                    parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                    parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
                     mCamera.setParameters(parameters);
                     try {
                         mCamera.setPreviewDisplay(surfaceView.getHolder());
@@ -68,6 +70,9 @@ public class CameraManager {
                     mCamera.takePicture(null, null, new Camera.PictureCallback() {
                         public void onPictureTaken(byte[] _data, Camera _camera) {
                             Bitmap bm = BitmapFactory.decodeByteArray(_data, 0, _data.length);
+                            android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+                            android.hardware.Camera.getCameraInfo(0, info);
+                            Bitmap bitmap = BitmapUtils.rotate(bm, info.orientation, Bitmap.Config.RGB_565);
 
                             String picname = "sdcard/1234566.jpg";//要保存在哪里，路径你自己设
                             File myCaptureFile = new File(picname);
@@ -76,7 +81,7 @@ public class CameraManager {
                             try {
                                 BufferedOutputStream bos = new BufferedOutputStream
                                         (new FileOutputStream(myCaptureFile));
-                                bm.compress(Bitmap.CompressFormat.JPEG, 80, bos);
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, bos);
                                 bos.flush();
                                 bos.close();
                                 releaseCamera();
@@ -160,7 +165,7 @@ public class CameraManager {
             if (listener != null) {
                 listener.onActionCallback(1, "Torch not on!");
             }
-        }else {
+        } else {
             if (listener != null) {
                 listener.onActionCallback(0, "Torch off!");
             }
