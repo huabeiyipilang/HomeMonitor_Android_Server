@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.hardware.Camera;
 import android.util.Log;
 
+import com.hyphenate.EMCallBack;
 import com.hyphenate.EMConnectionListener;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
@@ -16,10 +17,12 @@ import com.penghaonan.appframework.utils.CommonUtils;
 import com.penghaonan.appframework.utils.Logger;
 import com.penghaonan.homemonitor.server.App;
 import com.penghaonan.homemonitor.server.BuildConfig;
+import com.penghaonan.homemonitor.server.R;
 import com.penghaonan.homemonitor.server.manager.CommandManager;
 import com.penghaonan.homemonitor.server.messenger.AMessage;
 import com.penghaonan.homemonitor.server.messenger.AMessengerAdapter;
-import com.penghaonan.homemonitor.server.messenger.Client;
+import com.penghaonan.homemonitor.server.transfer.CmdRequest;
+import com.penghaonan.homemonitor.server.transfer.CmdResponse;
 
 import java.util.List;
 
@@ -93,22 +96,42 @@ public class EasemobMessengerAdapter extends AMessengerAdapter {
     @Override
     public void sendMessage(AMessage msg, final MessageSendCallback callback) {
         EMMessage message = MessageConvert.convert(msg);
+        message.setMessageStatusCallback(new EMCallBack() {
+            @Override
+            public void onSuccess() {
+                if (callback != null) {
+                    callback.onStateChanged(MessageSendCallback.STATE_SEND_SUCCESS, null);
+                }
+            }
+
+            @Override
+            public void onError(int code, String error) {
+                if (callback != null) {
+                    callback.onStateChanged(MessageSendCallback.STATE_SEND_FAILED, null);
+                }
+            }
+
+            @Override
+            public void onProgress(int progress, String status) {
+
+            }
+        });
         EMClient.getInstance().chatManager().sendMessage(message);
     }
 
     @Override
-    public void sendVideoCall(Client client, MessageSendCallback callback) {
-        super.sendVideoCall(client, callback);
+    public void sendVideoCallResponse(CmdRequest request, MessageSendCallback callback) {
+        super.sendVideoCallResponse(request, callback);
         try {
             try {
                 EMClient.getInstance().callManager().setCameraFacing(Camera.CameraInfo.CAMERA_FACING_BACK);
             } catch (HyphenateException e) {
                 Logger.e(e);
             }
-            EMClient.getInstance().callManager().makeVideoCall(client.getUserName());
+            EMClient.getInstance().callManager().makeVideoCall(request.client.getUserName());
         } catch (EMServiceNotReadyException e) {
             Logger.e(e);
-            sendTextMessage(client, "Video call failed", null);
+            sendTextResponse(request, CmdResponse.CODE_FAILED, AppDelegate.getString(R.string.video_call_res_failed));
         }
     }
 

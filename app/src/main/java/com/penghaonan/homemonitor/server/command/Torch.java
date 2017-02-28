@@ -2,8 +2,10 @@ package com.penghaonan.homemonitor.server.command;
 
 import android.text.TextUtils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.penghaonan.homemonitor.server.manager.camera.CameraManager;
-import com.penghaonan.homemonitor.server.messenger.TextMessage;
+import com.penghaonan.homemonitor.server.transfer.CmdResponse;
 
 /**
  * 手电筒命令
@@ -22,17 +24,11 @@ public class Torch extends ACommand {
         if (mMessage == null) {
             return false;
         }
-        String message = ((TextMessage) mMessage).getMessage();
-        if (TextUtils.isEmpty(message)) {
-            return false;
-        }
 
-        String[] parts = message.split(" ");
-        if (parts.length != 2) {
-            return false;
-        }
+        JSONObject jsonObject = JSON.parseObject(getRequest().data);
 
-        mAction = parts[1];
+        mAction = jsonObject.getString("action");
+
         if (!ARG_INFO.equals(mAction) && !ARG_ON.equals(mAction) && !ARG_OFF.equals(mAction)) {
             return false;
         }
@@ -52,9 +48,7 @@ public class Torch extends ACommand {
             CameraManager.getInstance().torchOn(new CameraManager.CameraActionListener() {
                 @Override
                 public void onActionCallback(int result, String msg) {
-                    if (result != 0) {
-                        getMessenger().sendTextMessage(getClient(), msg, null);
-                    }
+                    getMessenger().sendTextResponse(getRequest(), result != 0 ? CmdResponse.CODE_FAILED : CmdResponse.CODE_SUCCESS, getResponseString(msg));
                     notifyFinished();
                 }
             });
@@ -62,16 +56,23 @@ public class Torch extends ACommand {
             CameraManager.getInstance().torchOff(new CameraManager.CameraActionListener() {
                 @Override
                 public void onActionCallback(int result, String msg) {
-                    if (result != 0) {
-                        getMessenger().sendTextMessage(getClient(), msg, null);
-                    }
+                    getMessenger().sendTextResponse(getRequest(), result != 0 ? CmdResponse.CODE_FAILED : CmdResponse.CODE_SUCCESS, getResponseString(msg));
                     notifyFinished();
                 }
             });
         } else if ((ARG_INFO.equals(mAction))) {
-            boolean isTorchOn = CameraManager.getInstance().isTorchOn();
-            getMessenger().sendTextMessage(getClient(), "Torch is " + (isTorchOn ? "ON" : "OFF"), null);
+            getMessenger().sendTextResponse(getRequest(), CmdResponse.CODE_SUCCESS, getResponseString(null));
             notifyFinished();
         }
+    }
+
+    private String getResponseString(String msg) {
+        boolean isTorchOn = CameraManager.getInstance().isTorchOn();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("status", isTorchOn);
+        if (!TextUtils.isEmpty(msg)) {
+            jsonObject.put("msg", msg);
+        }
+        return jsonObject.toJSONString();
     }
 }

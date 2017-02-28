@@ -2,13 +2,18 @@ package com.penghaonan.homemonitor.server.manager;
 
 import android.text.TextUtils;
 
+import com.alibaba.fastjson.JSON;
+import com.penghaonan.appframework.AppDelegate;
+import com.penghaonan.appframework.utils.CollectionUtils;
 import com.penghaonan.appframework.utils.Logger;
-import com.penghaonan.homemonitor.server.BuildConfig;
+import com.penghaonan.homemonitor.server.R;
 import com.penghaonan.homemonitor.server.command.ACommand;
 import com.penghaonan.homemonitor.server.messenger.AMessage;
 import com.penghaonan.homemonitor.server.messenger.AMessengerAdapter;
 import com.penghaonan.homemonitor.server.messenger.TextMessage;
 import com.penghaonan.homemonitor.server.messenger.easemob.EasemobMessengerAdapter;
+import com.penghaonan.homemonitor.server.transfer.CmdRequest;
+import com.penghaonan.homemonitor.server.transfer.CmdResponse;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -22,8 +27,9 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
 
     private static CommandManager ourInstance = new CommandManager();
 
+    private final static int MAX_RUNNING_COMMAND_COUNT = 5;
     private Queue<ACommand> mCacheCommands = new LinkedList<>();
-    private ACommand mRunningCommand;
+    private Queue<ACommand> mRunningCommands = new LinkedList<>();
 
     private AMessengerAdapter mMessengerAdapter;
 
@@ -42,7 +48,7 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
         if (message instanceof TextMessage) {
             handleTextMessage((TextMessage) message);
         } else {
-            mMessengerAdapter.sendTextMessage(message.mClient, "Unknown message type!", null);
+            Logger.e("Unknown mssage type");
         }
     }
 
@@ -50,26 +56,40 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
         return mMessengerAdapter;
     }
 
+    /**
+     * 处理文本请求
+     */
     private void handleTextMessage(TextMessage msg) {
-        String cmd = msg.getCommand();
-        if (TextUtils.isEmpty(cmd)) {
-            mMessengerAdapter.sendTextMessage(msg.mClient, "Error command!", null);
+        String cmdStr = msg.mMessage;
+        if (TextUtils.isEmpty(cmdStr)) {
+            Logger.e("Command is null!");
             return;
         }
 
-        ACommand command = createCommand(cmd);
-        if (command == null) {
-            mMessengerAdapter.sendTextMessage(msg.mClient, "No such command!", null);
+        CmdRequest request = JSON.parseObject(cmdStr, CmdRequest.class);
+        if (request == null) {
+            Logger.e("Command format error");
             return;
         }
-        command.setCommandStr(msg.getMessage());
+
+        request.client = msg.mClient;
+        if (!request.isValid()) {
+            Logger.e("Command invalid");
+            return;
+        }
+
+        ACommand command = createCommand(request);
+        if (command == null) {
+            mMessengerAdapter.sendTextResponse(request, CmdResponse.CODE_FAILED, AppDelegate.getString(R.string.request_failed_cmd_not_support));
+            return;
+        }
         command.setMessage(msg);
         if (!command.isSupport()) {
-            mMessengerAdapter.sendTextMessage(command.getClient(), "This command is not support!", null);
+            mMessengerAdapter.sendTextResponse(request, CmdResponse.CODE_FAILED, AppDelegate.getString(R.string.request_failed_cmd_not_support));
             return;
         }
         if (!command.isCommandValid()) {
-            mMessengerAdapter.sendTextMessage(command.getClient(), "Command invalid!", null);
+            mMessengerAdapter.sendTextResponse(request, CmdResponse.CODE_FAILED, AppDelegate.getString(R.string.request_failed_cmd_invalid));
             return;
         }
 
@@ -79,12 +99,13 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
     /**
      * 根据cmd创建ACommand实例
      */
-    private ACommand createCommand(String cmd) {
+    private ACommand createCommand(CmdRequest request) {
         ACommand command = null;
         for (Class<? extends ACommand> cls : CommandProfile.getCommandClassList()) {
-            if (cls.getSimpleName().toLowerCase().equals(cmd)) {
+            if (cls.getSimpleName().toLowerCase().equals(request.cmd)) {
                 try {
                     command = cls.newInstance();
+                    command.setRequest(request);
                 } catch (Exception e) {
                     Logger.e(e);
                 }
@@ -95,35 +116,24 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
 
     private void postCommand(ACommand command) {
         mCacheCommands.add(command);
-        if (mRunningCommand != null) {
-            mMessengerAdapter.sendTextMessage(command.getClient(), "There has running command. Add this command in queue.", null);
-            if (BuildConfig.DEBUG) {
-                mMessengerAdapter.sendTextMessage(command.getClient(), "Running command:" + mRunningCommand.getCommandStr(), null);
-            }
-        }
         checkCommand();
     }
 
     private void checkCommand() {
-        if (mRunningCommand == null) {
-            mRunningCommand = mCacheCommands.poll();
-            if (mRunningCommand != null) {
-                mRunningCommand.setCommandListener(mCommandListener);
-                mRunningCommand.execute();
-            }
-        } else {
-            Logger.i("checkCommand", "Has running command:" + mRunningCommand.toString());
+        if (CollectionUtils.size(mRunningCommands) < MAX_RUNNING_COMMAND_COUNT) {
+            ACommand command = mCacheCommands.poll();
+            command.setCommandListener(mCommandListener);
+            command.execute();
+            mRunningCommands.add(command);
         }
     }
 
     private ACommand.CommandListener mCommandListener = new ACommand.CommandListener() {
 
         @Override
-        public void onFinished() {
-            if (mRunningCommand != null) {
-                mRunningCommand.setCommandListener(null);
-                mRunningCommand = null;
-            }
+        public void onFinished(ACommand command) {
+            command.setCommandListener(null);
+            mRunningCommands.remove(command);
             checkCommand();
         }
     };

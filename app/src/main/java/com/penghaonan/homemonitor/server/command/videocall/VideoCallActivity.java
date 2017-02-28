@@ -78,7 +78,7 @@ public class VideoCallActivity extends BaseActivity {
 
             }
         });
-        CommandManager.getInstance().getMessengerAdapter().sendVideoCall(sCmd.getClient(), null);
+        CommandManager.getInstance().getMessengerAdapter().sendVideoCallResponse(sCmd.getRequest(), null);
     }
 
     private void showTips(final String tips) {

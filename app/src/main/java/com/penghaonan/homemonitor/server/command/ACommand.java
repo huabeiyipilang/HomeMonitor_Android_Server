@@ -5,6 +5,7 @@ import com.penghaonan.homemonitor.server.manager.CommandManager;
 import com.penghaonan.homemonitor.server.messenger.AMessage;
 import com.penghaonan.homemonitor.server.messenger.AMessengerAdapter;
 import com.penghaonan.homemonitor.server.messenger.Client;
+import com.penghaonan.homemonitor.server.transfer.CmdRequest;
 
 /**
  * 所有命令的父类
@@ -12,20 +13,20 @@ import com.penghaonan.homemonitor.server.messenger.Client;
  */
 public abstract class ACommand {
 
-    protected String mCommandStr;
+    protected CmdRequest mRequest;
     protected AMessage mMessage;
     private CommandListener mListener;
 
     public interface CommandListener {
-        void onFinished();
+        void onFinished(ACommand command);
     }
 
-    public void setCommandStr(String cmd) {
-        mCommandStr = cmd;
+    public void setRequest(CmdRequest request) {
+        mRequest = request;
     }
 
-    public String getCommandStr() {
-        return mCommandStr;
+    public CmdRequest getRequest() {
+        return mRequest;
     }
 
     public void setMessage(AMessage message) {
@@ -43,12 +44,12 @@ public abstract class ACommand {
         mListener = listener;
     }
 
-    protected void notifyFinished() {
+    public void notifyFinished() {
         AppDelegate.post(new Runnable() {
             @Override
             public void run() {
                 if (mListener != null) {
-                    mListener.onFinished();
+                    mListener.onFinished(ACommand.this);
                 }
             }
         });
@@ -56,15 +57,11 @@ public abstract class ACommand {
 
     /**
      * 检查命令正确性
-     *
-     * @return
      */
     abstract public boolean isCommandValid();
 
     /**
      * 是否支持该命令
-     *
-     * @return
      */
     abstract public boolean isSupport();
 

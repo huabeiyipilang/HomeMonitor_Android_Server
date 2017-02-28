@@ -2,14 +2,19 @@ package com.penghaonan.homemonitor.server.messenger;
 
 import android.text.TextUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.penghaonan.appframework.AppDelegate;
+import com.penghaonan.appframework.utils.Logger;
 import com.penghaonan.homemonitor.server.manager.CommandManager;
+import com.penghaonan.homemonitor.server.transfer.CmdRequest;
+import com.penghaonan.homemonitor.server.transfer.CmdResponse;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Created by carl on 2/27/16.
+ * Messenger适配器
  */
 public abstract class AMessengerAdapter {
     public interface MessageListener {
@@ -40,24 +45,52 @@ public abstract class AMessengerAdapter {
         return null;
     }
 
-    public void sendTextMessage(Client client, String msg, MessageSendCallback callback) {
-        if (client == null || TextUtils.isEmpty(msg)) {
-            return;
+    /**
+     * 发送文本Response
+     */
+    public void sendTextResponse(CmdRequest request, int code, String msg) {
+        sendTextResponse(request, code, msg, null);
+    }
+
+    /**
+     * 发送文本Response
+     */
+    public void sendTextResponse(CmdRequest request, int code, String msg, MessageSendCallback callback) {
+        if (request != null && request.isValid() && !TextUtils.isEmpty(msg)) {
+            //封装CmdResponse
+            CmdResponse response = new CmdResponse();
+            response.id = request.id;
+            response.code = code;
+            response.msg = msg;
+
+            //封装成TextMessage发送
+            TextMessage message = new TextMessage();
+            message.mClient = request.client;
+            message.mMessage = JSON.toJSONString(response);
+            sendMessage(message, callback);
+        } else {
+            Logger.e("Response send failed! " + msg);
         }
-        TextMessage message = new TextMessage(msg);
-        message.mClient = client;
-        sendMessage(message, callback);
     }
 
-    public void sendImageMessage(Client client, String path, MessageSendCallback callback) {
-        AMessengerAdapter messenger = CommandManager.getInstance().getMessengerAdapter();
-        ImageMessage imgMessage = new ImageMessage();
-        imgMessage.mClient = client;
-        imgMessage.setImagePath(path);
-        messenger.sendMessage(imgMessage, callback);
+    /**
+     * 发送图片Response
+     */
+    public void sendImageResponse(CmdRequest request, String path, MessageSendCallback callback) {
+        if (request != null && request.isValid()) {
+            AMessengerAdapter messenger = CommandManager.getInstance().getMessengerAdapter();
+            ImageMessage imgMessage = new ImageMessage();
+            imgMessage.mClient = request.client;
+            imgMessage.setImagePath(path);
+            messenger.sendMessage(imgMessage, callback);
+        }
     }
 
-    public void sendVideoCall(Client client, MessageSendCallback callback) {}
+    /**
+     * 发送视频Response
+     */
+    public void sendVideoCallResponse(CmdRequest request, MessageSendCallback callback) {
+    }
 
     public void setMessageListener(MessageListener listener) {
         mMessageListener = listener;

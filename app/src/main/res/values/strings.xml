@@ -3,4 +3,8 @@
     <string name="service_start">服务启动</string>
     <string name="service_notif_content_msg">监控服务器运行中</string>
     <string name="helper_msg">请安装客户端，扫描上面二维码添加服务器</string>
+
+    <string name="video_call_res_failed">视频通话失败！</string>
+    <string name="request_failed_cmd_not_support">监控器不支持该指令！</string>
+    <string name="request_failed_cmd_invalid">无效指令！</string>
 </resources>

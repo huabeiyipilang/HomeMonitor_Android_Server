@@ -26,7 +26,7 @@ public class TakePic extends ACommand {
         CameraManager.getInstance().takePic(new CameraManager.CameraActionListener() {
             @Override
             public void onActionCallback(int result, String msg) {
-                getMessenger().sendImageMessage(getClient(), msg, null);
+                getMessenger().sendImageResponse(getRequest(), msg, null);
                 notifyFinished();
             }
         });

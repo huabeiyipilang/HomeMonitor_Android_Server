@@ -2,7 +2,6 @@ package com.penghaonan.homemonitor.server.messenger.easemob;
 
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
-import com.penghaonan.homemonitor.server.manager.CommandManager;
 import com.penghaonan.homemonitor.server.messenger.AMessage;
 import com.penghaonan.homemonitor.server.messenger.Client;
 import com.penghaonan.homemonitor.server.messenger.ImageMessage;
@@ -13,7 +12,7 @@ class MessageConvert {
         EMMessage message = null;
         if (msg instanceof TextMessage) {
             TextMessage textMessage = (TextMessage) msg;
-            message = EMMessage.createTxtSendMessage(textMessage.getMessage(), msg.mClient.getUserName());
+            message = EMMessage.createTxtSendMessage(textMessage.mMessage, msg.mClient.getUserName());
         } else if (msg instanceof ImageMessage) {
             ImageMessage imageMessage = (ImageMessage) msg;
             message = EMMessage.createImageSendMessage(imageMessage.getImagePath(), false, imageMessage.mClient.getUserName());
@@ -28,7 +27,8 @@ class MessageConvert {
             case TXT:
                 EMTextMessageBody body = (EMTextMessageBody) message.getBody();
                 String cmd = body.getMessage();
-                msg = new TextMessage(cmd);
+                msg = new TextMessage();
+                msg.mMessage = cmd;
                 msg.mClient = new Client(message.getUserName());
                 break;
             case IMAGE:
