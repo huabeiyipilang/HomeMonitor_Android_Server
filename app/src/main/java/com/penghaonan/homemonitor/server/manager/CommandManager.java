@@ -121,10 +121,13 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
 
     private void checkCommand() {
         if (CollectionUtils.size(mRunningCommands) < MAX_RUNNING_COMMAND_COUNT) {
+            if (CollectionUtils.isEmpty(mCacheCommands)) {
+                return;
+            }
             ACommand command = mCacheCommands.poll();
             command.setCommandListener(mCommandListener);
-            command.execute();
             mRunningCommands.add(command);
+            command.execute();
         }
     }
 

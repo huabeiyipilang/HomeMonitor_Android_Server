@@ -28,7 +28,7 @@ public class LocalMessengerAdapter extends AMessengerAdapter{
     @Override
     public void sendMessage(AMessage message, MessageSendCallback callback) {
         if (message instanceof TextMessage){
-            String msg = ((TextMessage) message).getMessage();
+            String msg = ((TextMessage) message).mMessage;
             Log.i(TAG, msg);
             if (mListener != null){
                 mListener.onMessageReceived(msg);
