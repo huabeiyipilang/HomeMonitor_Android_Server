@@ -23,16 +23,11 @@ public class CameraManager {
 
     private Camera mCamera;
 
-    public interface CameraActionListener {
-        void onActionCallback(int result, String msg);
+    private CameraManager() {
     }
 
     public static CameraManager getInstance() {
         return ourInstance;
-    }
-
-
-    private CameraManager() {
     }
 
     private boolean isInUse() {
@@ -142,15 +137,11 @@ public class CameraManager {
                         }
                     } catch (Exception e) {
                         Logger.e(e);
-                        if (mCamera != null) {
-                            try {
-                                mCamera.release();
-                            } catch (Exception ignored) {
-                            }
-                        }
+                        releaseCamera();
                         if (listener != null) {
                             listener.onActionCallback(1, "Camera open failed!");
                         }
+                        CameraActivity.finishActivity();
                     }
                 }
             };
@@ -199,10 +190,18 @@ public class CameraManager {
 
     void releaseCamera() {
         if (mCamera != null) {
-            mCamera.stopPreview();
-            mCamera.release();
+            try {
+                mCamera.stopPreview();
+                mCamera.release();
+            } catch (Exception e) {
+                Logger.e(e);
+            }
         }
         mCamera = null;
+    }
+
+    public interface CameraActionListener {
+        void onActionCallback(int result, String msg);
     }
 
 }

@@ -12,6 +12,7 @@ import com.penghaonan.appframework.utils.GlobalConfig;
 import com.penghaonan.appframework.utils.Logger;
 import com.penghaonan.appframework.utils.ToastUtils;
 import com.penghaonan.homemonitor.server.App;
+import com.penghaonan.homemonitor.server.MainActivity;
 import com.penghaonan.homemonitor.server.R;
 import com.penghaonan.homemonitor.server.base.BaseActivity;
 import com.penghaonan.homemonitor.server.manager.CommandManager;
@@ -116,6 +117,7 @@ public class LoginActivity extends BaseActivity {
                 adapter.onLogin();
                 finish();
                 Logger.i("Login success:" + sid);
+                AppDelegate.startActivity(MainActivity.class, null);
             }
 
             @Override
