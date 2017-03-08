@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.penghaonan.appframework.utils.Logger;
 import com.penghaonan.homemonitor.server.BuildConfig;
 import com.penghaonan.homemonitor.server.command.ACommand;
+import com.penghaonan.homemonitor.server.command.GetProfile;
 import com.penghaonan.homemonitor.server.messenger.AMessage;
 import com.penghaonan.homemonitor.server.messenger.AMessengerAdapter;
 import com.penghaonan.homemonitor.server.messenger.TextMessage;
@@ -26,15 +27,26 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
     private ACommand mRunningCommand;
 
     private AMessengerAdapter mMessengerAdapter;
+    private ACommand.CommandListener mCommandListener = new ACommand.CommandListener() {
 
-    public static CommandManager getInstance() {
-        return ourInstance;
-    }
+        @Override
+        public void onFinished() {
+            if (mRunningCommand != null) {
+                mRunningCommand.setCommandListener(null);
+                mRunningCommand = null;
+            }
+            checkCommand();
+        }
+    };
 
     private CommandManager() {
 //        mMessengerAdapter = new LocalMessengerAdapter();
         mMessengerAdapter = new EasemobMessengerAdapter();
         mMessengerAdapter.setMessageListener(this);
+    }
+
+    public static CommandManager getInstance() {
+        return ourInstance;
     }
 
     @Override
@@ -73,7 +85,12 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
             return;
         }
 
-        postCommand(command);
+        if (command instanceof GetProfile) {
+            command.execute();
+        } else {
+            postCommand(command);
+        }
+
     }
 
     /**
@@ -115,17 +132,5 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
             Logger.i("checkCommand", "Has running command:" + mRunningCommand.toString());
         }
     }
-
-    private ACommand.CommandListener mCommandListener = new ACommand.CommandListener() {
-
-        @Override
-        public void onFinished() {
-            if (mRunningCommand != null) {
-                mRunningCommand.setCommandListener(null);
-                mRunningCommand = null;
-            }
-            checkCommand();
-        }
-    };
 
 }
