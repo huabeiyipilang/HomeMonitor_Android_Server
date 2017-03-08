@@ -40,6 +40,11 @@ public abstract class AMessengerAdapter {
         return null;
     }
 
+    public void sendTextMessage(Client client, int msgId, MessageSendCallback callback) {
+        String msg = AppDelegate.getString(msgId);
+        sendTextMessage(client, msg, callback);
+    }
+
     public void sendTextMessage(Client client, String msg, MessageSendCallback callback) {
         if (client == null || TextUtils.isEmpty(msg)) {
             return;

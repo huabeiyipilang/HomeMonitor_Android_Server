@@ -27,6 +27,5 @@ public class VideoCall extends ACommand {
     @Override
     public void notifyFinished() {
         super.notifyFinished();
-        CommandManager.getInstance().getMessengerAdapter().sendTextMessage(getClient(), "通话结束", null);
     }
 }

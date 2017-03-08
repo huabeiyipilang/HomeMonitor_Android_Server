@@ -3,4 +3,7 @@
     <string name="service_start">服务启动</string>
     <string name="service_notif_content_msg">监控服务器运行中</string>
     <string name="helper_msg">请安装客户端，扫描上面二维码添加服务器</string>
+
+    <string name="video_call_time_out">视频连接超时</string>
+    <string name="video_call_end">视频结束</string>
 </resources>
