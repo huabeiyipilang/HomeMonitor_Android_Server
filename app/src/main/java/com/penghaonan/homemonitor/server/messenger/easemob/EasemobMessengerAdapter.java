@@ -16,12 +16,15 @@ import com.penghaonan.appframework.utils.CommonUtils;
 import com.penghaonan.appframework.utils.Logger;
 import com.penghaonan.homemonitor.server.App;
 import com.penghaonan.homemonitor.server.BuildConfig;
+import com.penghaonan.homemonitor.server.R;
 import com.penghaonan.homemonitor.server.manager.CommandManager;
 import com.penghaonan.homemonitor.server.messenger.AMessage;
 import com.penghaonan.homemonitor.server.messenger.AMessengerAdapter;
 import com.penghaonan.homemonitor.server.messenger.Client;
 
 import java.util.List;
+
+import static com.penghaonan.homemonitor.server.messenger.AMessengerAdapter.MessageSendCallback.STATE_SEND_FAILED;
 
 /**
  * 环信
@@ -108,7 +111,9 @@ public class EasemobMessengerAdapter extends AMessengerAdapter {
             EMClient.getInstance().callManager().makeVideoCall(client.getUserName());
         } catch (EMServiceNotReadyException e) {
             Logger.e(e);
-            sendTextMessage(client, "Video call failed", null);
+            if (callback != null) {
+                callback.onStateChanged(STATE_SEND_FAILED, AppDelegate.getString(R.string.video_call_send_call_failed));
+            }
         }
     }
 

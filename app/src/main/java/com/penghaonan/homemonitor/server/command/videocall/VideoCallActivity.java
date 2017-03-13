@@ -11,6 +11,7 @@ import com.penghaonan.appframework.AppDelegate;
 import com.penghaonan.homemonitor.server.R;
 import com.penghaonan.homemonitor.server.base.BaseActivity;
 import com.penghaonan.homemonitor.server.manager.CommandManager;
+import com.penghaonan.homemonitor.server.messenger.AMessengerAdapter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -81,7 +82,17 @@ public class VideoCallActivity extends BaseActivity {
         ButterKnife.bind(this);
         EMClient.getInstance().callManager().setSurfaceView(mLocalView, mRemoteView);
         EMClient.getInstance().callManager().addCallStateChangeListener(mCallStateChangeListener);
-        CommandManager.getInstance().getMessengerAdapter().sendVideoCall(sCmd.getClient(), null);
+        CommandManager.getInstance().getMessengerAdapter().sendVideoCall(sCmd.getClient(), new AMessengerAdapter.MessageSendCallback() {
+            @Override
+            public void onStateChanged(int state, Object info) {
+                if (state == AMessengerAdapter.MessageSendCallback.STATE_SEND_FAILED) {
+                    if (info != null && info instanceof String) {
+                        sendMessage((String) info);
+                    }
+                    finish();
+                }
+            }
+        });
         AppDelegate.postDelayed(mTimeOutRunnable, 30 * 1000);
     }
 
@@ -110,6 +121,12 @@ public class VideoCallActivity extends BaseActivity {
         AppDelegate.removeCallbacks(mTimeOutRunnable);
         sCmd.notifyFinished();
         sCmd = null;
+    }
+
+    private void sendMessage(String msg) {
+        if (sCmd != null) {
+            CommandManager.getInstance().getMessengerAdapter().sendTextMessage(sCmd.getClient(), msg, null);
+        }
     }
 
     private void sendMessage(int msgId) {

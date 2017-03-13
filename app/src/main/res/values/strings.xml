@@ -6,4 +6,5 @@
 
     <string name="video_call_time_out">视频连接超时</string>
     <string name="video_call_end">视频结束</string>
+    <string name="video_call_send_call_failed">发起视频请求失败</string>
 </resources>
