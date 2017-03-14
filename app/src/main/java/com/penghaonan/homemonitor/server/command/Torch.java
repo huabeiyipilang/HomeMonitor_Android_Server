@@ -47,6 +47,12 @@ public class Torch extends ACommand {
     }
 
     @Override
+    public void cancel() {
+        super.cancel();
+        CameraManager.getInstance().torchOff(null);
+    }
+
+    @Override
     public void execute() {
         if (ARG_ON.equals(mAction)) {
             CameraManager.getInstance().torchOn(new CameraManager.CameraActionListener() {

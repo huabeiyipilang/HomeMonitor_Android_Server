@@ -54,9 +54,11 @@ public class EasemobMessengerAdapter extends AMessengerAdapter {
 
             @Override
             public void onMessageReceived(List<EMMessage> messages) {
-                for (EMMessage message : messages) {
-                    AMessage msg = MessageConvert.convert(message);
-                    CommandManager.getInstance().onMessageReceive(msg);
+                if (mMessageListener != null) {
+                    for (EMMessage message : messages) {
+                        AMessage msg = MessageConvert.convert(message);
+                        mMessageListener.onMessageReceive(msg);
+                    }
                 }
             }
 

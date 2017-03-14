@@ -1,6 +1,8 @@
 package com.penghaonan.homemonitor.server;
 
 import android.Manifest;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -27,6 +29,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
 public class MainActivity extends BaseActivity implements LocalMessengerAdapter.LocalMessageListener, AMessengerAdapter.MessengerStateListener {

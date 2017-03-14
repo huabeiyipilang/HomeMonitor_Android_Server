@@ -1,5 +1,6 @@
 package com.penghaonan.homemonitor.server.command;
 
+import com.penghaonan.homemonitor.server.manager.CommandManager;
 import com.penghaonan.homemonitor.server.manager.camera.CameraManager;
 
 /**
@@ -14,6 +15,11 @@ public class TakePic extends ACommand {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String getQueueId() {
+        return CommandManager.QUEUE_CAMERA;
     }
 
     @Override

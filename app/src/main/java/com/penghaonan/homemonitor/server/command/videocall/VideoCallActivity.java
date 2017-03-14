@@ -1,5 +1,9 @@
 package com.penghaonan.homemonitor.server.command.videocall;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -8,6 +12,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.media.EMLocalSurfaceView;
 import com.hyphenate.media.EMOppositeSurfaceView;
 import com.penghaonan.appframework.AppDelegate;
+import com.penghaonan.homemonitor.server.Constants;
 import com.penghaonan.homemonitor.server.R;
 import com.penghaonan.homemonitor.server.base.BaseActivity;
 import com.penghaonan.homemonitor.server.manager.CommandManager;
@@ -25,6 +30,9 @@ public class VideoCallActivity extends BaseActivity {
     EMLocalSurfaceView mLocalView;
     @BindView(R.id.tv_tips)
     TextView mTipsView;
+
+    private ActionReceiver mReceiver = new ActionReceiver();
+
     private Runnable mTimeOutRunnable = new Runnable() {
         @Override
         public void run() {
@@ -94,6 +102,9 @@ public class VideoCallActivity extends BaseActivity {
             }
         });
         AppDelegate.postDelayed(mTimeOutRunnable, 30 * 1000);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Constants.ACTION_RESET);
+        registerReceiver(mReceiver, filter);
     }
 
     private void finishCall() {
@@ -121,6 +132,7 @@ public class VideoCallActivity extends BaseActivity {
         AppDelegate.removeCallbacks(mTimeOutRunnable);
         sCmd.notifyFinished();
         sCmd = null;
+        unregisterReceiver(mReceiver);
     }
 
     private void sendMessage(String msg) {
@@ -132,6 +144,16 @@ public class VideoCallActivity extends BaseActivity {
     private void sendMessage(int msgId) {
         if (sCmd != null) {
             CommandManager.getInstance().getMessengerAdapter().sendTextMessage(sCmd.getClient(), msgId, null);
+        }
+    }
+
+    private class ActionReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (Constants.ACTION_RESET.equals(intent.getAction())) {
+                finish();
+            }
         }
     }
 }

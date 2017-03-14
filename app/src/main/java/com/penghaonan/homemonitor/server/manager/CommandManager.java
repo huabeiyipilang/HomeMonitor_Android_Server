@@ -2,16 +2,19 @@ package com.penghaonan.homemonitor.server.manager;
 
 import android.text.TextUtils;
 
+import com.penghaonan.appframework.utils.CollectionUtils;
 import com.penghaonan.appframework.utils.Logger;
 import com.penghaonan.homemonitor.server.BuildConfig;
 import com.penghaonan.homemonitor.server.command.ACommand;
-import com.penghaonan.homemonitor.server.command.GetProfile;
 import com.penghaonan.homemonitor.server.messenger.AMessage;
 import com.penghaonan.homemonitor.server.messenger.AMessengerAdapter;
 import com.penghaonan.homemonitor.server.messenger.TextMessage;
 import com.penghaonan.homemonitor.server.messenger.easemob.EasemobMessengerAdapter;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 
@@ -21,21 +24,18 @@ import java.util.Queue;
  */
 public class CommandManager implements AMessengerAdapter.MessageListener {
 
+    public final static String QUEUE_CAMERA = "camera";
+    public final static String QUEUE_NONE = "";
     private static CommandManager ourInstance = new CommandManager();
-
-    private Queue<ACommand> mCacheCommands = new LinkedList<>();
-    private ACommand mRunningCommand;
+    private Map<String, Queue<ACommand>> mCmdQueueMap = new HashMap<>();
+    private Map<String, List<ACommand>> mRunningCmdMap = new HashMap<>();
 
     private AMessengerAdapter mMessengerAdapter;
     private ACommand.CommandListener mCommandListener = new ACommand.CommandListener() {
 
         @Override
-        public void onFinished() {
-            if (mRunningCommand != null) {
-                mRunningCommand.setCommandListener(null);
-                mRunningCommand = null;
-            }
-            checkCommand();
+        public void onFinished(ACommand command) {
+            onCommandFinished(command);
         }
     };
 
@@ -84,13 +84,7 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
             mMessengerAdapter.sendTextMessage(command.getClient(), "Command invalid!", null);
             return;
         }
-
-        if (command instanceof GetProfile) {
-            command.execute();
-        } else {
-            postCommand(command);
-        }
-
+        postCommand(command);
     }
 
     /**
@@ -111,26 +105,65 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
     }
 
     private void postCommand(ACommand command) {
-        mCacheCommands.add(command);
-        if (mRunningCommand != null) {
-            mMessengerAdapter.sendTextMessage(command.getClient(), "There has running command. Add this command in queue.", null);
-            if (BuildConfig.DEBUG) {
-                mMessengerAdapter.sendTextMessage(command.getClient(), "Running command:" + mRunningCommand.getCommandStr(), null);
-            }
-        }
-        checkCommand();
-    }
-
-    private void checkCommand() {
-        if (mRunningCommand == null) {
-            mRunningCommand = mCacheCommands.poll();
-            if (mRunningCommand != null) {
-                mRunningCommand.setCommandListener(mCommandListener);
-                mRunningCommand.execute();
-            }
+        if (CommandManager.QUEUE_NONE.equals(command.getQueueId())) {
+            //无需排队
+            runCommand(command);
         } else {
-            Logger.i("checkCommand", "Has running command:" + mRunningCommand.toString());
+            //有队列
+            List<ACommand> runningList = mRunningCmdMap.get(command.getQueueId());
+            if (CollectionUtils.isEmpty(runningList)) {
+                //如果改队列号中没有正在执行的，则直接执行
+                runCommand(command);
+            } else {
+                ACommand runningCmd = runningList.get(0);
+                //如果有正在执行的，扔进队列
+                mMessengerAdapter.sendTextMessage(command.getClient(), "There has running command. Add this command in queue.", null);
+                if (BuildConfig.DEBUG) {
+                    mMessengerAdapter.sendTextMessage(command.getClient(), "Queue Id : " + runningCmd.getQueueId() + "Running command:" + runningCmd.getCommandStr(), null);
+                }
+                Queue<ACommand> cmdQueue = mCmdQueueMap.get(command.getQueueId());
+                if (cmdQueue == null) {
+                    cmdQueue = new LinkedList<>();
+                    mCmdQueueMap.put(command.getQueueId(), cmdQueue);
+                }
+                cmdQueue.add(command);
+                Logger.i("Command put in queue:" + command);
+            }
         }
     }
 
+    private void runCommand(ACommand command) {
+        List<ACommand> cmdList = mRunningCmdMap.get(command.getQueueId());
+        if (cmdList == null) {
+            cmdList = new LinkedList<>();
+            mRunningCmdMap.put(command.getQueueId(), cmdList);
+        }
+        cmdList.add(command);
+        command.setCommandListener(mCommandListener);
+        Logger.i("runCommand:" + command);
+        command.execute();
+    }
+
+    private void onCommandFinished(ACommand command) {
+        if (command == null) {
+            return;
+        }
+        Logger.i("onCommandFinished:" + command);
+        List<ACommand> commandList = mRunningCmdMap.get(command.getQueueId());
+        if (CollectionUtils.isEmpty(commandList)) {
+            return;
+        }
+        command.setCommandListener(null);
+        commandList.remove(command);
+    }
+
+    public void reset() {
+        for (Map.Entry<String, List<ACommand>> entry : mRunningCmdMap.entrySet()) {
+            for (ACommand command : entry.getValue()) {
+                command.cancel();
+            }
+        }
+        mRunningCmdMap.clear();
+        mCmdQueueMap.clear();
+    }
 }

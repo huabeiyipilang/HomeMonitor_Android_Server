@@ -29,7 +29,7 @@ public abstract class AMessengerAdapter {
         void onStateChanged(int state, Object info);
     }
 
-    private MessageListener mMessageListener;
+    protected MessageListener mMessageListener;
     private final List<MessengerStateListener> mMessengerStateListeners = new LinkedList<>();
 
     abstract public void onAppStart();

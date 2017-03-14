@@ -15,17 +15,14 @@ public abstract class ACommand {
     protected String mCommandStr;
     protected AMessage mMessage;
     private CommandListener mListener;
+    private boolean mCancel;
 
-    public interface CommandListener {
-        void onFinished();
+    public String getCommandStr() {
+        return mCommandStr;
     }
 
     public void setCommandStr(String cmd) {
         mCommandStr = cmd;
-    }
-
-    public String getCommandStr() {
-        return mCommandStr;
     }
 
     public void setMessage(AMessage message) {
@@ -39,16 +36,27 @@ public abstract class ACommand {
         return null;
     }
 
+    public boolean isCancel() {
+        return mCancel;
+    }
+
+    public void cancel() {
+        mCancel = true;
+    }
+
     public void setCommandListener(CommandListener listener) {
         mListener = listener;
     }
 
     protected void notifyFinished() {
+        if (isCancel()) {
+            return;
+        }
         AppDelegate.post(new Runnable() {
             @Override
             public void run() {
                 if (mListener != null) {
-                    mListener.onFinished();
+                    mListener.onFinished(ACommand.this);
                 }
             }
         });
@@ -73,7 +81,23 @@ public abstract class ACommand {
      */
     abstract public void execute();
 
+    /**
+     * 命令队列
+     */
+    public String getQueueId() {
+        return CommandManager.QUEUE_NONE;
+    }
+
     protected AMessengerAdapter getMessenger() {
         return CommandManager.getInstance().getMessengerAdapter();
+    }
+
+    @Override
+    public String toString() {
+        return mCommandStr;
+    }
+
+    public interface CommandListener {
+        void onFinished(ACommand command);
     }
 }

@@ -20,6 +20,11 @@ public class VideoCall extends ACommand {
     }
 
     @Override
+    public String getQueueId() {
+        return CommandManager.QUEUE_CAMERA;
+    }
+
+    @Override
     public void execute() {
         VideoCallActivity.startVideoCall(this);
     }
