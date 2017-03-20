@@ -12,10 +12,19 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    signingConfigs {
+        debug{
+            storeFile file("hm_sign.jks")
+            storePassword "zhenjiba2"
+            keyAlias "server"
+            keyPassword "server"
+        }
+    }
     buildTypes {
         debug {
             minifyEnabled false
             manifestPlaceholders = [EASEMOB_APPKEY: "carl#homemonitor"]
+            signingConfig signingConfigs.debug
         }
         release {
             minifyEnabled true
