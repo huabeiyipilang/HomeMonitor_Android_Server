@@ -41,26 +41,35 @@ public class CommandProfile {
     public static String getProfile() {
         List<CommandData> profile = new ArrayList<>();
         CommandData cmdData = new CommandData();
+        cmdData.index = 1;
         cmdData.command = TakePic.class.getSimpleName().toLowerCase();
         cmdData.description = "拍照";
+        cmdData.imgUrl = "https://raw.githubusercontent.com/huabeiyipilang/HomeMonitor_Resources/master/img/ic_float_menu_takepic.png";
         profile.add(cmdData);
 
         cmdData = new CommandData();
+        cmdData.index = 2;
         cmdData.command = "torch on";
         cmdData.description = "开灯";
+        cmdData.imgUrl = "https://raw.githubusercontent.com/huabeiyipilang/HomeMonitor_Resources/master/img/ic_float_menu_torch_on.png";
         profile.add(cmdData);
 
         cmdData = new CommandData();
+        cmdData.index = 3;
         cmdData.command = "torch off";
         cmdData.description = "关灯";
+        cmdData.imgUrl = "https://raw.githubusercontent.com/huabeiyipilang/HomeMonitor_Resources/master/img/ic_float_menu_torch_off.png";
         profile.add(cmdData);
 
         cmdData = new CommandData();
+        cmdData.index = 4;
         cmdData.command = VideoCall.class.getSimpleName().toLowerCase();
         cmdData.description = "视频";
+        cmdData.imgUrl = "https://raw.githubusercontent.com/huabeiyipilang/HomeMonitor_Resources/master/img/ic_float_menu_video.png";
         profile.add(cmdData);
 
         cmdData = new CommandData();
+        cmdData.index = 5;
         cmdData.command = Reset.class.getSimpleName().toLowerCase();
         cmdData.description = "重置";
         profile.add(cmdData);

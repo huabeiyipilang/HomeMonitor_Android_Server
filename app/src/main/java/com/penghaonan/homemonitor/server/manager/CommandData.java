@@ -1,9 +1,8 @@
 package com.penghaonan.homemonitor.server.manager;
 
-/**
- * Created by carl on 3/20/16.
- */
 public class CommandData {
+    public int index;
     public String command;
     public String description;
+    public String imgUrl;
 }
