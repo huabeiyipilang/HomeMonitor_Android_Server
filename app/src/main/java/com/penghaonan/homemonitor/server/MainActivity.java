@@ -51,7 +51,6 @@ public class MainActivity extends BaseActivity implements LocalMessengerAdapter.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        checkPermissions();
         createQRCode();
         startService(new Intent(this, MainService.class));
         CommandManager.getInstance().getMessengerAdapter().addMessengerStateListener(this);
@@ -79,6 +78,7 @@ public class MainActivity extends BaseActivity implements LocalMessengerAdapter.
                         public void run() {
                             mQRCodeView.setImageBitmap(bitmap);
                             mServerIdView.setText(sid);
+                            checkPermissions();
                         }
                     });
                 }
@@ -110,6 +110,7 @@ public class MainActivity extends BaseActivity implements LocalMessengerAdapter.
         }
         permissons.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         permissons.add(Manifest.permission.CAMERA);
+        permissons.add(Manifest.permission.RECORD_AUDIO);
         CommonUtils.checkPermission(this, permissons);
     }
 
