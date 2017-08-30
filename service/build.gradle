@@ -1,4 +1,4 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 apply plugin: 'com.neenbedankt.android-apt'
 
 android {
@@ -6,33 +6,10 @@ android {
     buildToolsVersion '25.0.0'
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
-        applicationId "com.penghaonan.homemonitor.server"
         minSdkVersion 16
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
-    }
-    signingConfigs {
-        debug{
-            storeFile file("hm_sign.jks")
-            storePassword "zhenjiba2"
-            keyAlias "server"
-            keyPassword "server"
-        }
-    }
-    buildTypes {
-        debug {
-            minifyEnabled false
-            manifestPlaceholders = [EASEMOB_APPKEY: "carl#homemonitor"]
-            signingConfig signingConfigs.debug
-        }
-        release {
-            minifyEnabled true
-            manifestPlaceholders = [EASEMOB_APPKEY: "carl#homemonitoronline"]
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-    productFlavors {
     }
 }
 

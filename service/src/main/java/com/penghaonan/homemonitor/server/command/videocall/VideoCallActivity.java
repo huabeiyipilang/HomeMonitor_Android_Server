@@ -18,18 +18,12 @@ import com.penghaonan.homemonitor.server.base.BaseActivity;
 import com.penghaonan.homemonitor.server.manager.CommandManager;
 import com.penghaonan.homemonitor.server.messenger.AMessengerAdapter;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class VideoCallActivity extends BaseActivity {
 
     private static VideoCall sCmd;
-    @BindView(R.id.sv_remote)
-    EMOppositeSurfaceView mRemoteView;
-    @BindView(R.id.sv_local)
-    EMLocalSurfaceView mLocalView;
-    @BindView(R.id.tv_tips)
-    TextView mTipsView;
+    private EMOppositeSurfaceView mRemoteView;
+    private EMLocalSurfaceView mLocalView;
+    private TextView mTipsView;
 
     private ActionReceiver mReceiver = new ActionReceiver();
 
@@ -87,7 +81,11 @@ public class VideoCallActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_call);
-        ButterKnife.bind(this);
+
+        mRemoteView = (EMOppositeSurfaceView) findViewById(R.id.sv_remote);
+        mLocalView = (EMLocalSurfaceView) findViewById(R.id.sv_local);
+        mTipsView = (TextView) findViewById(R.id.tv_tips);
+
         EMClient.getInstance().callManager().setSurfaceView(mLocalView, mRemoteView);
         EMClient.getInstance().callManager().addCallStateChangeListener(mCallStateChangeListener);
         CommandManager.getInstance().getMessengerAdapter().sendVideoCall(sCmd.getClient(), new AMessengerAdapter.MessageSendCallback() {
