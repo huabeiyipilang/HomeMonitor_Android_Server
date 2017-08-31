@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.penghaonan.homemonitor.server">
+    package="com.penghaonan.homemonitor.connectionservice">
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -23,22 +23,11 @@
     <uses-feature android:name="android.hardware.autofocus" />
 
     <application
-        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".MainActivity"
-            android:launchMode="singleTask">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".messenger.easemob.LoginActivity" />
 
         <!-- 声明SDK所需的service SDK核心功能 -->
         <service
@@ -65,11 +54,6 @@
         <activity
             android:name=".manager.camera.CameraActivity"
             android:launchMode="singleInstance" />
-
-        <service
-            android:name=".MainService"
-            android:enabled="true"
-            android:exported="false" />
 
         <activity android:name=".command.videocall.VideoCallActivity" />
     </application>
