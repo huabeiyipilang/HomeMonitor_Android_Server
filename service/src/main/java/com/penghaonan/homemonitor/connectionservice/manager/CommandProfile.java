@@ -6,6 +6,7 @@ import com.penghaonan.homemonitor.connectionservice.command.GetProfile;
 import com.penghaonan.homemonitor.connectionservice.command.Reset;
 import com.penghaonan.homemonitor.connectionservice.command.TakePic;
 import com.penghaonan.homemonitor.connectionservice.command.Torch;
+import com.penghaonan.homemonitor.connectionservice.command.terminal.Terminal;
 import com.penghaonan.homemonitor.connectionservice.command.videocall.VideoCall;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class CommandProfile {
         sCommandCls.add(TakePic.class);
         sCommandCls.add(VideoCall.class);
         sCommandCls.add(Reset.class);
+        sCommandCls.add(Terminal.class);
     }
 
     public static List<Class<? extends ACommand>> getCommandClassList() {
@@ -72,6 +74,12 @@ public class CommandProfile {
         cmdData.index = 5;
         cmdData.command = Reset.class.getSimpleName().toLowerCase();
         cmdData.description = "重置";
+        profile.add(cmdData);
+
+        cmdData = new CommandData();
+        cmdData.index = 6;
+        cmdData.command = Terminal.class.getSimpleName().toLowerCase();
+        cmdData.description = "Terminal";
         profile.add(cmdData);
 
         return JSON.toJSONString(profile);

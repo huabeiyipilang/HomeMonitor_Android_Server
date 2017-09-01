@@ -1,6 +1,5 @@
 package com.penghaonan.homemonitor.connectionservice.messenger.easemob;
 
-import android.content.Intent;
 import android.hardware.Camera;
 import android.util.Log;
 
@@ -14,8 +13,6 @@ import com.hyphenate.exceptions.HyphenateException;
 import com.penghaonan.appframework.AppDelegate;
 import com.penghaonan.appframework.utils.CommonUtils;
 import com.penghaonan.appframework.utils.Logger;
-import com.penghaonan.homemonitor.connectionservice.BuildConfig;
-import com.penghaonan.homemonitor.connectionservice.R;
 import com.penghaonan.homemonitor.connectionservice.messenger.AMessage;
 import com.penghaonan.homemonitor.connectionservice.messenger.AMessengerAdapter;
 import com.penghaonan.homemonitor.connectionservice.messenger.Client;
@@ -39,7 +36,7 @@ public class EasemobMessengerAdapter extends AMessengerAdapter {
         EMOptions options = new EMOptions();
         options.setAcceptInvitationAlways(true);
         EMClient.getInstance().init(AppDelegate.getApp(), options);
-        EMClient.getInstance().setDebugMode(BuildConfig.DEBUG);
+        EMClient.getInstance().setDebugMode(AppDelegate.isDebug());
         Log.i(TAG, "EMChat init！");
 
         //TODO
@@ -113,7 +110,7 @@ public class EasemobMessengerAdapter extends AMessengerAdapter {
         } catch (EMServiceNotReadyException e) {
             Logger.e(e);
             if (callback != null) {
-                callback.onStateChanged(STATE_SEND_FAILED, AppDelegate.getString(R.string.video_call_send_call_failed));
+//                callback.onStateChanged(STATE_SEND_FAILED, AppDelegate.getString(R.string.video_call_send_call_failed));
             }
         }
     }

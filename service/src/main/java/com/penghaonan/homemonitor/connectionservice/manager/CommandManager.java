@@ -2,9 +2,9 @@ package com.penghaonan.homemonitor.connectionservice.manager;
 
 import android.text.TextUtils;
 
+import com.penghaonan.appframework.AppDelegate;
 import com.penghaonan.appframework.utils.CollectionUtils;
 import com.penghaonan.appframework.utils.Logger;
-import com.penghaonan.homemonitor.connectionservice.BuildConfig;
 import com.penghaonan.homemonitor.connectionservice.command.ACommand;
 import com.penghaonan.homemonitor.connectionservice.messenger.AMessage;
 import com.penghaonan.homemonitor.connectionservice.messenger.AMessengerAdapter;
@@ -118,7 +118,7 @@ public class CommandManager implements AMessengerAdapter.MessageListener {
                 ACommand runningCmd = runningList.get(0);
                 //如果有正在执行的，扔进队列
                 mMessengerAdapter.sendTextMessage(command.getClient(), "There has running command. Add this command in queue.", null);
-                if (BuildConfig.DEBUG) {
+                if (AppDelegate.isDebug()) {
                     mMessengerAdapter.sendTextMessage(command.getClient(), "Queue Id : " + runningCmd.getQueueId() + "Running command:" + runningCmd.getCommandStr(), null);
                 }
                 Queue<ACommand> cmdQueue = mCmdQueueMap.get(command.getQueueId());

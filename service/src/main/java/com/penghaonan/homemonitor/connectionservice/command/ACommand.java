@@ -100,4 +100,8 @@ public abstract class ACommand {
     public interface CommandListener {
         void onFinished(ACommand command);
     }
+
+    public void sendTextMessage(String msg) {
+        getMessenger().sendTextMessage(getClient(), msg, null);
+    }
 }
