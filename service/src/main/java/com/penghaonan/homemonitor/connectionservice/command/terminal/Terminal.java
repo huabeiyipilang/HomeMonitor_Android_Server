@@ -66,7 +66,7 @@ public class Terminal extends ACommand {
             if (file == null || !file.exists()) {
                 sendTextMessage("No such file!");
             } else {
-                if (file.getPath().endsWith(".jpg") || file.getPath().endsWith(".png")) {
+                if (file.getPath().toLowerCase().endsWith(".jpg") || file.getPath().toLowerCase().endsWith(".png")) {
                     sendTextMessage("Sendding...");
                     getMessenger().sendImageMessage(getClient(), file.getPath(), null);
                 }

@@ -2,6 +2,7 @@ package com.penghaonan.homemonitor.connectionservice.manager;
 
 import com.alibaba.fastjson.JSON;
 import com.penghaonan.homemonitor.connectionservice.command.ACommand;
+import com.penghaonan.homemonitor.connectionservice.command.DeviceInfo;
 import com.penghaonan.homemonitor.connectionservice.command.GetProfile;
 import com.penghaonan.homemonitor.connectionservice.command.Reset;
 import com.penghaonan.homemonitor.connectionservice.command.TakePic;
@@ -29,6 +30,7 @@ public class CommandProfile {
         sCommandCls.add(VideoCall.class);
         sCommandCls.add(Reset.class);
         sCommandCls.add(Terminal.class);
+        sCommandCls.add(DeviceInfo.class);
     }
 
     public static List<Class<? extends ACommand>> getCommandClassList() {
@@ -74,12 +76,6 @@ public class CommandProfile {
         cmdData.index = 5;
         cmdData.command = Reset.class.getSimpleName().toLowerCase();
         cmdData.description = "重置";
-        profile.add(cmdData);
-
-        cmdData = new CommandData();
-        cmdData.index = 6;
-        cmdData.command = Terminal.class.getSimpleName().toLowerCase();
-        cmdData.description = "Terminal";
         profile.add(cmdData);
 
         return JSON.toJSONString(profile);
