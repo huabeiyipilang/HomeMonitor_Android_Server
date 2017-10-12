@@ -19,8 +19,6 @@ import com.penghaonan.homemonitor.connectionservice.messenger.Client;
 
 import java.util.List;
 
-import static com.penghaonan.homemonitor.connectionservice.messenger.AMessengerAdapter.MessageSendCallback.STATE_SEND_FAILED;
-
 /**
  * 环信
  * Created by carl on 2/29/16.
@@ -36,13 +34,8 @@ public class EasemobMessengerAdapter extends AMessengerAdapter {
         EMOptions options = new EMOptions();
         options.setAcceptInvitationAlways(true);
         EMClient.getInstance().init(AppDelegate.getApp(), options);
-        EMClient.getInstance().setDebugMode(AppDelegate.isDebug());
+        EMClient.getInstance().setDebugMode(Logger.isDebug());
         Log.i(TAG, "EMChat init！");
-
-        //TODO
-//        Intent intent = new Intent(AppDelegate.getApp(), LoginActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        AppDelegate.startActivity(intent);
     }
 
     public void onLogin() {

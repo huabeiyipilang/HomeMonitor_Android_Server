@@ -18,7 +18,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         sInstance = this;
-        Logger.setEnable(com.penghaonan.homemonitor.connectionservice.BuildConfig.DEBUG);
+        Logger.setEnable(BuildConfig.DEBUG);
         AppDelegate.init(this);
         CommandManager.getInstance().getMessengerAdapter().onAppStart();
     }
